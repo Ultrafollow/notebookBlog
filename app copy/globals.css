@@ -1,0 +1,19 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+    --markdown-bg: #fff;
+    --markdown-text: #24292e;
+  }
+   
+  .dark {
+    --markdown-bg: #1a1a1a;
+    --markdown-text: #e5e7eb;
+  }
+   
+  .markdown-body {
+    background-color: var(--markdown-bg);
+    color: var(--markdown-text);
+  }
+  

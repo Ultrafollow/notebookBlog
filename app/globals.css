@@ -1,26 +1,222 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* 主容器 - Flex布局 */
+html {
+    scroll-padding-top: 6rem;
+  }
+/* 复制按钮样式 */
+.copy-code-button {
+  @apply absolute top-1 right-1 p-1 rounded-md transition-all;
+  @apply w-6 h-6 flex items-center justify-center;
+  @apply bg-gray-100/50 hover:bg-gray-100 dark:bg-gray-700/50 dark:hover:bg-gray-600;
+  
+  .copy-icon {
+    @apply w-4 h-4 text-gray-500 transition-all;
+    @apply dark:text-gray-400;
+  }
+  
+  .check-icon {
+    @apply absolute inset-0 m-auto w-4 h-4 opacity-0 scale-50;
+    @apply text-emerald-500 dark:text-emerald-400;
+    transition: all 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+  }
+  
+  /* 复制成功状态 */
+  &.copied {
+    @apply bg-emerald-100/80 dark:bg-emerald-900/50;
+    
+    .copy-icon {
+      @apply opacity-0 scale-75;
+    }
+    .check-icon {
+      @apply opacity-100 scale-100;
+    }
+  }
+  
+  /* 错误状态 */
+  &.error {
+    @apply bg-red-100/80 dark:bg-red-900/50;
+    
+    .copy-icon {
+      @apply text-red-500 dark:text-red-400;
+    }
+  }
+  
+  &:active {
+    transform: scale(0.95);
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+.container-wrapper {
+    margin-bottom: 1000px;
+    display: flex; /* 启用弹性布局 */
+  }
+  
+  /* 内容区域 */
+  .container-wrapper .content-wrapper {
+    flex-grow: 1;    /* 占据剩余空间 */
+    flex-shrink: 1;  /* 允许收缩 */
+    border-right: 3px solid #ccc; /* 右侧分隔线 */
+    padding-right: 10px;         /* 与TOC的间距 */
+  }
+  
+  /* TOC容器 */
+  .toc-wrapper {
+    flex-grow: 0;     /* 保持固定宽度 */
+    flex-shrink: 0;   /* 禁止收缩 */
+    min-width: 150px; /* 最小宽度 */
+    max-width: 280px;
+    overflow: auto;   /* 内容溢出滚动 */
+    
+    /* 粘性定位 */
+    position: -webkit-sticky;
+    position: sticky;
+    top: 80px;        /* 距离顶部距离 */
+    height: fit-content; /* 高度适应内容 */
+    padding: 20px;    /* 内边距 */
+  }
+  
+  /* 移动端适配 */
+  @media (max-width: 999px) {
+    .toc-wrapper {
+      display: none; /* 隐藏TOC */
+    }
+    .content-wrapper {
+      border-right: none; /* 移除分隔线 */
+    }
+  }
+  
+  /* TOC列表样式 */
+  .toc-wrapper li {
+    list-style: none; /* 移除默认列表符号 */
+  }
+    /* 一级目录 */
+  .toc-level-1 {
+    margin-left: 0;
+  }
+  
+  /* 二级目录 */
+  .toc-level-2 {
+    margin-left: 10px;
+    border-left: 2px solid #e5e7eb;
+    padding-left: 0.5rem; 
+  }
+  
+  /* 三级目录 */
+  .toc-level-3 {
+    margin-left: 14px;
+    border-left: 1px solid #e5e7eb;
+    padding-left: 0.5rem;
+  }
+  /* 目录链接样式 */
+  .toc-wrapper .toc a {
+    @apply dark:text-gray-300;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    font-weight: 600;
+    position: relative;
+    color: #6a6a6a; /* 使用CSS变量 */
+    transition: color 0.3s;       /* 颜色过渡效果 */
+  }
+  
+  /* 激活状态 */
+  .toc-wrapper .toc a.active {
+    @apply dark:text-primary-400;
+    transform: translateX(8px);
+    color: #0077B5;
+    font-size: 1.2rem; /* 放大字体 */
+    
+    /* 左侧指示箭头 */
+    &::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: -1rem;
+      transform: translateY(-50%);
+      border-width: 10px;
+      border-style: solid;
+      border-color: transparent transparent transparent #8cccef;
+    }
+  }
+
+/* 强制所有 Markdown 内容继承布局字体 */
+.dark .markdown-root {
+    --color-fg-default: theme('colors.gray.100');
+    --color-canvas-default: theme('colors.dark');
+    --color-canvas-subtle: theme('colors.gray.800');
+    --color-border-default: theme('colors.gray.700');
+  }
+.markdown-body {
+    @apply bg-white dark:bg-dark;
+    font-family: var(--font-en-body), var(--font-cn-body), sans-serif !important;
+
+    h1, h2, h3, h4, h5, h6 {
+        @apply text-gray-600 dark:text-gray-400 dark:hover:text-gray-300;
+        font-family: inherit !important;
+    }
+  
+    pre, code {
+        font-family: var(--font-mono) !important;
+    }
+  
+    li {
+        font-family: inherit !important;
+    }
+
+    a { 
+        @apply dark:text-primary-300;
+        font-family: inherit !important;
+        text-underline-offset: 4px;
+        transition: color 0.2s;
+    }
+    h1 a,
+    h2 a,
+    h3 a {
+        @apply text-gray-700 dark:text-gray-300 dark:hover:text-gray-100;
+        text-decoration: none;
+    }
+    hr {
+      height:2px !important;
+      background-color: #ccc !important;
+    }
+    p {
+        @apply dark:text-gray-300;
+        font-size: 19px;
+        text-indent: 15px;
+        line-height: 1.8;
+    }
+    img {
+        @apply mx-auto mt-8 mb-14 block; /* 水平居中 + 上下边距 */
+
+        max-width: min(60%, 768px);  /* 最大宽度不超过768px */
+        max-height: 70vh;             /* 最大高度为视口高度的70% */
+        min-width: 20vw;             /* 最小宽度限制 */
+        width: auto;                   /* 保持原始宽高比 */
+        height: auto;                 /* 保持原始宽高比 */
+
+        border: 1px solid #e5e7eb;
+        border-radius: 0.375rem; 
+        @apply dark:border-gray-600; 
+        @apply shadow-demure dark:shadow-mondegreen;
+        
+        background-color: #282a36;
+        padding: 0.5rem; 
+    }
+    code:not(pre code){
+        @apply text-dark bg-fuchsia-300;
+    }
+    table {
+      @apply mx-auto;
+      text-align: center;
+      --tw-border-opacity: 1;
+      border-color: rgb(75 85 99 / var(--tw-border-opacity));
+    }
+    tr,
+    td,
+    th {
+      @apply dark:bg-[#282a36] dark:text-gray-300;
+      --tw-bg-opacity: 0.1;
+      text-align: center;
+    }
 }

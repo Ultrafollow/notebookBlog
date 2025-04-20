@@ -1,0 +1,166 @@
+import path from 'path';
+import fs from 'fs/promises'
+import { bundleMDX } from 'mdx-bundler'
+import { getCategoriesWithPosts } from '@/app/lib/utils'
+import { getMDXComponent } from 'mdx-bundler/client'
+import { notFound } from 'next/navigation'
+import remarkGfm from 'remark-gfm'
+import rehypeSlug from 'rehype-slug';
+import rehypePrismPlus from 'rehype-prism-plus';
+import toc from "@jsdevtools/rehype-toc";
+import remarkCodeTitles from "remark-flexible-code-titles";
+import rehypeAutolinkHeadings from 'rehype-autolink-headings';
+import { formatDate } from '@/app/lib/client-utils'
+import { Container } from '@/components/ui/Container'
+import rehypeTocExt from '@/components/Plugins/Rehype-toc-ext'
+import { registerPrismLanguages } from '@/app/lib/lang'
+import rehypeCodeCopyButton from '@/components/Plugins/rehype-code-copy-button.mjs'
+import readingTime from 'reading-time';
+import Twemoji from '@/components/ui/Twemoji.js';
+
+
+registerPrismLanguages()
+ 
+// 获取解码后的分类目录
+export async function generateStaticParams() {
+  const categoriesData = await getCategoriesWithPosts()
+  return categoriesData.flatMap(({ category, posts }) => 
+    posts.map(post => ({
+      category: category, // 保持已编码的路径格式
+      slug: post.slug
+    }))
+  )
+}
+
+export async function getPost(params) {
+  try {
+    // 解码 URL 参数
+    const {category, slug} = await params
+    const decodedCategory = decodeURIComponent(category)
+    const decodedSlug = decodeURIComponent(slug)
+    // 获取数据
+    const categoriesData = await getCategoriesWithPosts()
+    
+    // 查找匹配分类
+    const targetCategory = categoriesData.find(c => 
+      decodeURIComponent(c.category) === decodedCategory
+    )
+    if (!targetCategory) throw new Error('分类不存在')
+    // 查找匹配文章
+    const post = targetCategory.posts.find(p => p.slug === decodedSlug)
+    if (!post) throw new Error('文章不存在')
+    var mdxPath = path.join(process.cwd(), 'content', decodedCategory, `${decodedSlug}.mdx`);  
+    var mdPath = path.join(process.cwd(), 'content', decodedCategory, `${decodedSlug}.md`);  
+
+    let mdxSource
+    try {
+      // 先尝试读取 .mdx 文件
+      await fs.access(mdxPath);
+      mdxSource = await fs.readFile(mdxPath, 'utf8');
+    } catch (mdxError) {
+      // 如果 .mdx 不存在，尝试读取 .md
+      try {
+        await fs.access(mdPath);
+        mdxSource = await fs.readFile(mdPath, 'utf8');
+      } catch (mdError) {
+        // 两个文件都不存在时返回404
+        notFound();
+      }
+    }
+    const { text: readingTimeText, minutes } = readingTime(mdxSource);
+    // console.log(mdxSource)
+    const { code } = await bundleMDX({
+      source: mdxSource,
+      cwd:path.join(process.cwd(), 'app', 'components', 'Plugins'),
+      mdxOptions: (options, frontmatter) => {
+        options.remarkPlugins = [...(options.remarkPlugins ?? []), ...[remarkGfm, remarkCodeTitles]]
+        options.rehypePlugins = [...(options.rehypePlugins ?? []), ...[
+          rehypeSlug,
+          [rehypeAutolinkHeadings, { behavior: 'wrap' }],
+          [rehypePrismPlus, { ignoreMissing: false, showLineNumbers: true}],
+          rehypeCodeCopyButton,
+          toc,
+          rehypeTocExt,
+        ]]
+        return options
+      },
+      esbuildOptions: options => {
+        options.outdir = path.join(process.cwd(), 'public')
+        options.write = true
+        return options
+      }
+    })
+ 
+    return {
+      code,
+      frontmatter: {
+        ...post,
+        date: post.date, // 保持 Date 对象格式
+        readingTime: readingTimeText
+      }
+    }
+  } catch (error) {
+    console.error('文章加载失败:', error)
+    return null
+  }
+}
+ 
+export default async function PostPage({ params }) {
+  const result = await getPost(params)
+  const {category} = await params
+  if (!result) notFound()
+ 
+  const { code, frontmatter } = result
+  const MDXComponent = getMDXComponent(code)
+ 
+  return (
+    <Container className="mb-[200px] max-w-[60%] py-8">
+      {/* 上部 - 文章元信息 */}
+      <header className="mb-12 bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm">
+        <span className="text-5xl font-bold mb-4 text-gray-900 dark:text-gray-100">
+          {frontmatter.title}
+        </span>
+        <hr></hr>
+        <div className="flex items-center text-sm text-gray-500 dark:text-gray-400 space-x-4">
+          <Twemoji emoji="calendar" />
+          <time className='px-2 py-1 rounded-md bg-gray-100 dark:bg-green-200 dark:text-gray-500'>
+            {formatDate(frontmatter.date)}
+          </time>
+          <span className="h-1 w-1 rounded-full bg-current" aria-hidden />
+          <Twemoji emoji="open-book" />
+          <span className="px-2 py-1 rounded-md bg-gray-100 dark:bg-green-200 dark:text-gray-500">
+            {decodeURIComponent(category)}
+          </span>
+          <span className="h-1 w-1 rounded-full bg-current" aria-hidden />
+          <Twemoji emoji="hourglass-not-done" />
+          <span className="px-2 py-1 rounded-md bg-gray-100 dark:bg-green-200 dark:text-gray-500">
+            {frontmatter.readingTime}
+          </span>
+        </div>
+        {frontmatter.summary && (
+          <p className="mt-4 text-lg text-gray-600 dark:text-gray-300">
+            {frontmatter.summary}
+          </p>
+        )}
+        {frontmatter.tags && (
+          <div className="mt-4 flex flex-wrap gap-2">
+            {frontmatter.tags.map(tag => (
+              <span 
+                key={tag}
+                className="px-3 py-1 text-sm rounded-full bg-blue-100 dark:bg-blue-100 text-blue-800"
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
+        )}
+      </header>
+ 
+      <div className="space-y-8">
+          <MDXComponent />
+      </div>
+    </Container>
+  )
+}
+ 
+export const revalidate = 3600

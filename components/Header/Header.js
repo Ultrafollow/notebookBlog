@@ -1,0 +1,54 @@
+'use client'
+
+import clsx from 'clsx'
+import { usePathname } from 'next/navigation'
+import { Container } from '@/components/ui/Container'
+import { GrowingUnderline } from '@/components/ui/Growing-underline'
+import { Link } from '@/components/ui/Link'
+import { HEADER_NAV_LINKS } from '@/data/navigation'
+import { SITE_METADATA } from '@/data/site-metadata'
+import { Logo } from './Logo'
+import { ThemeSwitcher } from './Theme-switcher'
+
+export function Header() {
+  let pathname = usePathname()
+
+  return (
+    <Container
+      as="header"
+      className={clsx(
+        'bg-white/75 py-2 backdrop-blur dark:bg-dark/75',
+        'shadow-sm saturate-100 md:rounded-2xl',
+        SITE_METADATA.stickyNav && 'sticky top-2 z-50 lg:top-3'
+      )}
+    >
+      <div className="flex items-center justify-between gap-2">
+            <Logo />
+        <div className="flex items-center gap-4">
+          <div className="hidden gap-1.5 sm:flex">
+            {HEADER_NAV_LINKS.map(({ title, href }) => {
+              let isActive = pathname.startsWith(href)
+              return (
+                <Link key={title} href={href} className="px-3 py-1 font-medium">
+                  <GrowingUnderline
+                    className={clsx(isActive && 'bg-[length:100%_50%]')}
+                  >
+                    {title}
+                  </GrowingUnderline>
+                </Link>
+              )
+            })}
+          </div>
+          <div
+            data-orientation="vertical"
+            role="separator"
+            className="hidden h-4 w-px shrink-0 bg-gray-200 dark:bg-gray-600 md:block"
+          />
+          <div className="flex items-center gap-2">
+            <ThemeSwitcher />
+          </div>
+        </div>
+      </div>
+    </Container>
+  )
+}
