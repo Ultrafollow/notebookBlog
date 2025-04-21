@@ -1,3 +1,4 @@
+// eslint.config.js
 import globals from 'globals';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -6,14 +7,10 @@ import { FlatCompat } from '@eslint/eslintrc';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const compat = new FlatCompat({
-  baseDirectory: __dirname,
-});
+const compat = new FlatCompat({ baseDirectory: __dirname });
 
 export default [
-  {
-    ignores: ['tailwind.config.js'],
-  },
+  { ignores: ['tailwind.config.js'] },
   js.configs.recommended,
   ...compat.extends(
     'plugin:jsx-a11y/recommended',
@@ -23,34 +20,23 @@ export default [
   ),
   {
     languageOptions: {
-      globals: {
-        ...globals.browser,
-        ...globals.amd,
-        ...globals.node,
-      },
-      ecmaVersion: 'latest',     // 升级到最新 ECMAScript 版本
-      sourceType: 'module',      // 使用 ES Modules
-      parserOptions: {
-        ecmaFeatures: {
-          jsx: true             // 启用 JSX 支持
-        }
-      }
+      globals: { ...globals.browser, ...globals.amd, ...globals.node },
+      ecmaVersion: 'latest',
+      sourceType: 'module',
+      parserOptions: { ecmaFeatures: { jsx: true } }
     },
     rules: {
-      'prettier/prettier': 'error',
+      // 关闭引号相关规则
+      'quotes': 'off',
+      'prettier/prettier': ['error', { 
+        singleQuote: false,     // Prettier 不强制单引号
+        jsxSingleQuote: false   // Prettier 不强制 JSX 单引号
+      }],
+      // 其他规则保持不变...
       'react/react-in-jsx-scope': 'off',
-      'jsx-a11y/anchor-is-valid': [
-        'error',
-        {
-          components: ['Link'],
-          specialLink: ['hrefLeft', 'hrefRight'],
-          aspects: ['invalidHref', 'preferButton'],
-        }
-      ],
+      'jsx-a11y/anchor-is-valid': ['error', { components: ['Link'] }],
       'react/prop-types': 'off',
-      'react/no-unescaped-entities': 'off',
-      'no-undef': 'error',
-      'no-unused-vars': ['warn', { argsIgnorePattern: '^_' }]
-    },
-  },
+      'react/no-unescaped-entities': 'off'
+    }
+  }
 ];
