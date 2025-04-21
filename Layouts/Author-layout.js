@@ -43,7 +43,8 @@ export function AuthorLayout() {
                         <p>
                             The original intention of creating this blog was to 
                             record some notes of my scientific research and study. 
-                        <p></p>
+                        </p>
+                        <p>
                             I have used paper 
                             notes, ipad and OneNote before, but none of them met my usage requirements. Finally, it was 
                             decided to create a personal blog.
