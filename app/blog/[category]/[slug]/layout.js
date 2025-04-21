@@ -1,59 +1,86 @@
-import globals from 'globals';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
-import js from '@eslint/js';
-import { FlatCompat } from '@eslint/eslintrc';
+'use client'
+// app/blog/[category]/[slug]/layout.js
+import '@/app/globals.css'
+import '@/app/prism-dracula.css'
+import 'github-markdown-css'
+import { useEffect } from "react"
+import Discussion from '@/components/Comment/Discussion.jsx'
+import { useTheme } from 'next-themes' // 导入 useTheme 钩子
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const compat = new FlatCompat({
-  baseDirectory: __dirname,
-});
+export default function BlogLayout({ children }) {
+  const { theme } = useTheme()
+    // 复制按钮功能
+  useEffect(() => {
+    const handleCopy = async (event) => {
+      const button = event.currentTarget;
+      const codeContent = button.parentElement.querySelector('code').textContent;
+      
+      try {
+        await navigator.clipboard.writeText(codeContent);
+        button.classList.add('copied');
+        setTimeout(() => button.classList.remove('copied'), 500);
+      } catch (err) {
+        console.error('复制失败:', err);
+        button.classList.add('error');
+        setTimeout(() => button.classList.remove('error'), 500);
+      }
+    };
+  
+    const btns = document.querySelectorAll('.copy-code-button');
+    btns.forEach(btn => btn.addEventListener('click', handleCopy));
+  
+    return () => {
+      btns.forEach(btn => btn.removeEventListener('click', handleCopy));
+    };
+  }, []);
 
-export default [
-  {
-    ignores: ['tailwind.config.js'],
-  },
-  js.configs.recommended,
-  ...compat.extends(
-    'plugin:jsx-a11y/recommended',
-    'plugin:prettier/recommended',
-    'next',
-    'next/core-web-vitals'
-  ),
-  {
-    languageOptions: {
-      globals: {
-        ...globals.browser,
-        ...globals.amd,
-        ...globals.node,
-      },
-      ecmaVersion: 'latest',     // 升级到最新 ECMAScript 版本
-      sourceType: 'module',      // 使用 ES Modules
-      parserOptions: {
-        ecmaFeatures: {
-          jsx: true             // 启用 JSX 支持
+  // toc定位
+  useEffect(()=>{
+    const scrollPaddingTop = 6 * 16
+    // 这是所有标题从上到下
+    var hs = [];
+    document.querySelectorAll('.content-wrapper>h1>a, .content-wrapper>h2>a, .content-wrapper>h3>a, .content-wrapper>h4>a')
+      .forEach(n=>hs.push(n));
+
+    // 这是所有的toc标题
+    var ts = []
+    document.querySelectorAll('.toc-wrapper li>a').forEach(a=>ts.push(a));
+
+    const handle = () => {
+      let activeIndex = 0;
+      for (var i=0; i<hs.length; i++) {
+        let {y} = hs[i].getBoundingClientRect();
+        if (y >= 20 + scrollPaddingTop) {
+          break;
+        }
+        if (y < 20 + scrollPaddingTop) {
+          activeIndex = i;
         }
       }
-    },
-    rules: {
-      'prettier/prettier': 'error',
-      'react/react-in-jsx-scope': 'off',
-      'jsx-a11y/anchor-is-valid': [
-        'error',
-        {
-          components: ['Link'],
-          specialLink: ['hrefLeft', 'hrefRight'],
-          aspects: ['invalidHref', 'preferButton'],
+      let href = hs[activeIndex]? hs[activeIndex].href : null;
+      for (var i=0; i<ts.length; i++) {
+        if (href == ts[i].href) {
+          if (!ts[i].classList.contains('active')) {
+            ts[i].classList.add('active');
+          }
+        } else {
+          ts[i].classList.remove('active');
         }
-      ],
-      'react/prop-types': 'off',
-      'react/no-unescaped-entities': 'off',
-      
-      // 移除 TypeScript 相关规则
-      // 新增 JavaScript 常用规则（可选）
-      'no-undef': 'error',
-      'no-unused-vars': ['warn', { argsIgnorePattern: '^_' }]
-    },
-  },
-];
+      }
+    }
+    handle();
+    document.addEventListener('scroll', handle)
+    return ()=>document.removeEventListener('scroll', handle)
+  }, []);
+
+  return (
+    <>
+      <div className="markdown-root">
+        <div className='markdown-body'>{children}</div>
+      </div>
+      <div className='container mx-auto py-12 px-40'>
+        <Discussion theme={theme}/>
+      </div>
+    </> 
+  )
+}
