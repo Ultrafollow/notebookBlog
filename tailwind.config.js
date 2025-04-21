@@ -80,6 +80,31 @@ module.exports = {
               figure: {
                 marginTop: 0,
               },
+              code: {
+                color: '#4400B3 ',
+                backgroundColor: '#FF8888',
+                paddingLeft: '4px',
+                paddingRight: '4px',
+                paddingTop: '2px',
+                paddingBottom: '2px',
+                borderRadius: '0.25rem',
+              },
+              'code::before': {
+                content: 'none',
+              },
+              'code::after': {
+                content: 'none',
+              },
+              '.image-container': {
+                width: 'fit-content',
+                marginLeft: 'auto',
+                marginRight: 'auto',
+                borderRadius: '0.5rem',
+                img: {
+                  marginTop: 0,
+                  marginBottom: 0,
+                },
+              },
             },
           },
           invert: {

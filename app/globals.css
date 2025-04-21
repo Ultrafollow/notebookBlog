@@ -50,7 +50,7 @@ html {
 }
 
 .container-wrapper {
-    margin-bottom: 1000px;
+    margin-bottom: 20px;
     display: flex; /* 启用弹性布局 */
   }
   

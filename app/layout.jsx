@@ -5,6 +5,7 @@ import '@/app/twemoji.css'
 import { TiltedGridBackground } from '@/components/ui/Title-grid-background.js'
 import { ThemeProviders } from './theme-providers'
 import Header from '@/components/Header'
+import Footer from '@/components/Footer'
 
 const FONT_PLAYPEN_SANS = Titan_One({
   subsets: ['latin'],
@@ -58,6 +59,7 @@ export default function RootLayout({ children }) {
           <main className="mb-auto grow">
             {children}
           </main>
+          <Footer/>
         </ThemeProviders>
       </body>
     </html>

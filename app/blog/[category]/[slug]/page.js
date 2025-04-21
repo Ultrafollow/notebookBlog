@@ -123,17 +123,17 @@ export default async function PostPage({ params }) {
         <hr></hr>
         <div className="flex items-center text-sm text-gray-500 dark:text-gray-400 space-x-4">
           <Twemoji emoji="calendar" />
-          <time className='px-2 py-1 rounded-md bg-gray-100 dark:bg-green-200 dark:text-gray-500'>
+          <time className='px-2 py-1 rounded-md bg-gray-100 dark:bg-purple-200 dark:text-gray-600'>
             {formatDate(frontmatter.date)}
           </time>
           <span className="h-1 w-1 rounded-full bg-current" aria-hidden />
           <Twemoji emoji="open-book" />
-          <span className="px-2 py-1 rounded-md bg-gray-100 dark:bg-green-200 dark:text-gray-500">
+          <span className="px-2 py-1 rounded-md bg-gray-100 dark:bg-purple-200 dark:text-gray-600">
             {decodeURIComponent(category)}
           </span>
           <span className="h-1 w-1 rounded-full bg-current" aria-hidden />
           <Twemoji emoji="hourglass-not-done" />
-          <span className="px-2 py-1 rounded-md bg-gray-100 dark:bg-green-200 dark:text-gray-500">
+          <span className="px-2 py-1 rounded-md bg-gray-100 dark:bg-purple-200 dark:text-gray-600">
             {frontmatter.readingTime}
           </span>
         </div>
@@ -159,6 +159,7 @@ export default async function PostPage({ params }) {
       <div className="space-y-8">
           <MDXComponent />
       </div>
+      <span className="block w-full h-1 bg-gradient-to-r from-red-400 via-lime-500 to-purple-600" />
     </Container>
   )
 }

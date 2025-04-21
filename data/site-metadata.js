@@ -19,5 +19,6 @@ export const SITE_METADATA = {
     headerTitle: 'FollowXu',
     theme: 'system',
     stickyNav: true,
+    siteRepo:'https://github.com/Ultrafollow/notebookBlog',
   }
   
