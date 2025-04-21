@@ -26,7 +26,7 @@ export async function generateStaticParams() {
   const categoriesData = await getCategoriesWithPosts()
   return categoriesData.flatMap(({ category, posts }) => 
     posts.map(post => ({
-      category: category, // 保持已编码的路径格式
+      category: encodeURIComponent(category),
       slug: post.slug
     }))
   )

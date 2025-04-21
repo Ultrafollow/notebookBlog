@@ -24,7 +24,6 @@ export default [
   // 扩展配置
   ...compat.extends(
     'plugin:jsx-a11y/recommended',    // 可访问性检查
-    'plugin:prettier/recommended',    // Prettier 集成
     'next',                           // Next.js 默认规则
     'next/core-web-vitals'            // Web Vitals 相关规则
   ),
