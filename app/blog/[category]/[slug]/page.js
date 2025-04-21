@@ -166,5 +166,3 @@ export default async function PostPage({ params }) {
     </Container>
   )
 }
- 
-export const revalidate = 3600
