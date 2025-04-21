@@ -46,8 +46,6 @@ export default [
     },
 
     rules: {
-      // 代码格式化
-      'prettier/prettier': 'error',
 
       // React 相关
       'react/react-in-jsx-scope': 'off',  // Next.js 自动处理 React 导入

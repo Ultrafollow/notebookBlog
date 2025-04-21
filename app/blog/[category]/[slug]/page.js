@@ -24,9 +24,12 @@ registerPrismLanguages()
 // 获取解码后的分类目录
 export async function generateStaticParams() {
   const categoriesData = await getCategoriesWithPosts()
+  const { category,posts } = categoriesData[0]
+  console.log(decodeURIComponent(category))
+  console.log(posts[0].slug)
   return categoriesData.flatMap(({ category, posts }) => 
     posts.map(post => ({
-      category: encodeURIComponent(category),
+      category: decodeURIComponent(category),
       slug: post.slug
     }))
   )
