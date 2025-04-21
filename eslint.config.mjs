@@ -49,7 +49,7 @@ export default [
       ],
       'react/prop-types': 'off',
       'react/no-unescaped-entities': 'off',
-      'quotes': ['error', 'allow', { avoidEscape: true }],
+      'quotes': ['error', 'single', { avoidEscape: true }],
       'no-undef': 'error',
       'no-unused-vars': ['warn', { argsIgnorePattern: '^_' }]
     },
