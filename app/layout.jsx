@@ -15,8 +15,8 @@ const FONT_PLAYPEN_SANS = Titan_One({
 })
 
 const chineseFont = Ma_Shan_Zheng({
-  subsets: ['chinese-simplified'], 
-  // subsets:['latin'],
+  // subsets: ['chinese-simplified'], 
+  subsets:['latin'],
   weight: '400', 
   display: 'swap',
   variable: '--font-cn-body',
