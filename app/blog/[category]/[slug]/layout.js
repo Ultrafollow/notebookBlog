@@ -3,7 +3,7 @@
 import '@/app/globals.css'
 import '@/app/prism-dracula.css'
 import 'github-markdown-css'
-import { useEffect } from "react"
+import { useEffect } from 'react'
 import Discussion from '@/components/Comment/Discussion.jsx'
 import { useTheme } from 'next-themes' // 导入 useTheme 钩子
 
@@ -75,7 +75,7 @@ export default function BlogLayout({ children }) {
 
   return (
     <>
-      <div className="markdown-root">
+      <div className='markdown-root'>
         <div className='markdown-body'>{children}</div>
       </div>
       <div className='container mx-auto py-12 px-40'>

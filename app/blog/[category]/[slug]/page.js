@@ -7,8 +7,8 @@ import { notFound } from 'next/navigation'
 import remarkGfm from 'remark-gfm'
 import rehypeSlug from 'rehype-slug';
 import rehypePrismPlus from 'rehype-prism-plus';
-import toc from "@jsdevtools/rehype-toc";
-import remarkCodeTitles from "remark-flexible-code-titles";
+import toc from '@jsdevtools/rehype-toc';
+import remarkCodeTitles from 'remark-flexible-code-titles';
 import rehypeAutolinkHeadings from 'rehype-autolink-headings';
 import { formatDate } from '@/app/lib/client-utils'
 import { Container } from '@/components/ui/Container'
@@ -117,31 +117,31 @@ export default async function PostPage({ params }) {
   const MDXComponent = getMDXComponent(code)
  
   return (
-    <Container className="mb-[200px] max-w-[60%] py-8">
+    <Container className='mb-[200px] max-w-[60%] py-8'>
       {/* 上部 - 文章元信息 */}
-      <header className="mb-12 bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm">
-        <span className="text-5xl font-bold mb-4 text-gray-900 dark:text-gray-100">
+      <header className='mb-12 bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm'>
+        <span className='text-5xl font-bold mb-4 text-gray-900 dark:text-gray-100'>
           {frontmatter.title}
         </span>
         <hr></hr>
-        <div className="flex items-center text-sm text-gray-500 dark:text-gray-400 space-x-4">
-          <Twemoji emoji="calendar" />
+        <div className='flex items-center text-sm text-gray-500 dark:text-gray-400 space-x-4'>
+          <Twemoji emoji='calendar' />
           <time className='px-2 py-1 rounded-md bg-gray-100 dark:bg-purple-200 dark:text-gray-600'>
             {formatDate(frontmatter.date)}
           </time>
-          <span className="h-1 w-1 rounded-full bg-current" aria-hidden />
-          <Twemoji emoji="open-book" />
-          <span className="px-2 py-1 rounded-md bg-gray-100 dark:bg-purple-200 dark:text-gray-600">
+          <span className='h-1 w-1 rounded-full bg-current' aria-hidden />
+          <Twemoji emoji='open-book' />
+          <span className='px-2 py-1 rounded-md bg-gray-100 dark:bg-purple-200 dark:text-gray-600'>
             {decodeURIComponent(category)}
           </span>
-          <span className="h-1 w-1 rounded-full bg-current" aria-hidden />
-          <Twemoji emoji="hourglass-not-done" />
-          <span className="px-2 py-1 rounded-md bg-gray-100 dark:bg-purple-200 dark:text-gray-600">
+          <span className='h-1 w-1 rounded-full bg-current' aria-hidden />
+          <Twemoji emoji='hourglass-not-done' />
+          <span className='px-2 py-1 rounded-md bg-gray-100 dark:bg-purple-200 dark:text-gray-600'>
             {frontmatter.readingTime}
           </span>
         </div>
         {frontmatter.summary && (
-          <p className="mt-4 text-lg text-gray-600 dark:text-gray-300">
+          <p className='mt-4 text-lg text-gray-600 dark:text-gray-300'>
             {frontmatter.summary}
           </p>
         )}

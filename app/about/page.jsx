@@ -1,4 +1,4 @@
-import { AuthorLayout } from "@/Layouts/Author-layout"
+import { AuthorLayout } from '@/Layouts/Author-layout'
 
 export default function AboutPage() {
     return (

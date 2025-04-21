@@ -49,9 +49,7 @@ export default [
       ],
       'react/prop-types': 'off',
       'react/no-unescaped-entities': 'off',
-      
-      // 移除 TypeScript 相关规则
-      // 新增 JavaScript 常用规则（可选）
+      'quotes': ['error', 'allow', { avoidEscape: true }],
       'no-undef': 'error',
       'no-unused-vars': ['warn', { argsIgnorePattern: '^_' }]
     },
