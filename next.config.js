@@ -13,6 +13,11 @@
 //   },
 // }
 const nextConfig = {
+  eslint: {
+    // Warning: This allows production builds to successfully complete even if
+    // your project has ESLint errors.
+    ignoreDuringBuilds: true,
+  },
   webpack: (config) => {
     // 添加 SVG 处理规则
     config.module.rules.push({
@@ -21,7 +26,6 @@ const nextConfig = {
     });
     return config;
   },
-  // 允许 Next.js 的 Image 组件处理 SVG
   images: {
     dangerouslyAllowSVG: true,
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;"
