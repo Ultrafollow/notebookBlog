@@ -1,4 +1,4 @@
-import BuildWith from '@/components/footer/BuildWith';
+import BuildWith from '@/components/Footer/BuildWith';
 import { Container } from '@/components/ui/Container';
 
 export default function Footer() {

@@ -1,6 +1,6 @@
 import { Suspense } from 'react'
 import { ListLayoutSkeleton } from '@/components/ui/BlogSkeleton'
-import ListLayout from '@/layouts/ListLayout.js'
+import ListLayout from '@/Layouts/ListLayout.js'
 import { getCategoriesWithPosts } from '@/app/lib/utils'
 
 const POSTS_PER_PAGE = 5
