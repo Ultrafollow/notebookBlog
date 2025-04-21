@@ -49,7 +49,6 @@ export default [
       ],
       'react/prop-types': 'off',
       'react/no-unescaped-entities': 'off',
-      'quotes': 'off',
       'no-undef': 'error',
       'no-unused-vars': ['warn', { argsIgnorePattern: '^_' }]
     },
