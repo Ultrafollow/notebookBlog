@@ -3,7 +3,7 @@ import { Suspense } from 'react'
 import { ListLayoutSkeleton } from '@/components/ui/BlogSkeleton'
 import ListLayout from '@/Layouts/ListLayout'
 import { getCategoriesWithPosts } from '@/app/lib/utils'
-import { genPageMetadata } from 'app/seo'
+import { genPageMetadata } from '@/app/seo'
 
 
 export let metadata = genPageMetadata({ title: 'Blog' })

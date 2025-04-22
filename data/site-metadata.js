@@ -6,8 +6,7 @@ export const SITE_METADATA = {
       'A personal space on the cloud where I document my programming journey, sharing lessons, insights, and resources for fellow developers.',
     language: 'zh-CN', // Set your content language
     // theme: 'system', // system, dark or light
-    // siteUrl: 'https://www.leohuynh.dev',
-    // siteRepo: 'https://github.com/hta218/leohuynh.dev',
+    siteUrl: 'https://www.followxu.top',
     siteLogo: `${process.env.BASE_PATH || ''}/static/images/logo.png`,
     personalPicture: `${process.env.BASE_PATH || ''}/static/images/personalPic.jpg`,
     wechatQR: `${process.env.BASE_PATH || ''}/static/images/wechat-qr.jpg`,
