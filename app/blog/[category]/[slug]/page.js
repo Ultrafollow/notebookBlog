@@ -18,7 +18,6 @@ import rehypeCodeCopyButton from '@/components/Plugins/rehype-code-copy-button.m
 import readingTime from 'reading-time';
 import Twemoji from '@/components/ui/Twemoji.js';
 
-
 registerPrismLanguages()
  
 // 获取解码后的分类目录
@@ -108,6 +107,55 @@ export async function getPost(params) {
   }
 }
  
+// 最终版 generateMetadata
+export async function generateMetadata({ params }) {
+  const {category, slug} = await params
+  const decodedCategory = decodeURIComponent(category);
+  const decodedSlug = decodeURIComponent(slug);
+
+  try {
+    const categoriesData = await getCategoriesWithPosts();
+    const targetCategory = categoriesData.find(c => 
+      decodeURIComponent(c.category) === decodedCategory
+    );
+    if (!targetCategory) throw new Error('分类未找到');
+
+    const post = targetCategory.posts.find(p => p.slug === decodedSlug);
+    if (!post) throw new Error('文章未找到');
+
+    // 构建封面图URL
+    const coverImage = post.coverImage 
+      ? new URL(post.coverImage, process.env.SITE_URL).toString()
+      : new URL('/default-og.jpg', process.env.SITE_URL).toString();
+
+    return {
+      title: `${post.title} | ${decodedCategory}`,
+      description: post.summary || '技术文章分享',
+      alternates: {
+        canonical: `/blog/${encodeURIComponent(decodedCategory)}/${encodeURIComponent(decodedSlug)}`
+      },
+      openGraph: {
+        title: post.title,
+        description: post.summary,
+        type: 'article',
+        publishedTime: post.date,
+        authors: [post.author || 'followxu'],
+        images: [{
+          url: coverImage,
+          width: 1200,
+          height: 630,
+          alt: post.title,
+        }]
+      },
+    };
+    
+  } catch (error) {
+    console.error('元数据生成失败:', error);
+    return fallbackMetadata();
+  }
+}
+
+
 export default async function PostPage({ params }) {
   const result = await getPost(params)
   const {category} = await params

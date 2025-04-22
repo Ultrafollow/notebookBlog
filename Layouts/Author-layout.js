@@ -111,7 +111,7 @@ export function AuthorLayout() {
                             <li>
                                 <Twemoji emoji="atom-symbol" /> Using <strong>React v19</strong>,{' '}
                                 <strong>Next v15</strong>
-                                (Using App router and Turbopack)
+                                (Using App router and webpack),{' '}
                                 and <strong>JavaScript</strong>.
                             </li>
                             <li>
