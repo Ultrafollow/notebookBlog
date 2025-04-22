@@ -126,8 +126,8 @@ export async function generateMetadata({ params }) {
 
     // 构建封面图URL
     const coverImage = post.coverImage 
-      ? new URL(post.coverImage, process.env.SITE_METADATA.siteUrl).toString()
-      : new URL('/default-og.jpg', process.env.SITE_METADATA.siteUrl).toString();
+      ? new URL(post.coverImage, SITE_METADATA.siteUrl).toString()
+      : new URL('/default-og.jpg', SITE_METADATA.siteUrl).toString();
 
     return {
       title: `${post.title} | ${decodedCategory}`,
