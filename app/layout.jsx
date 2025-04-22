@@ -42,6 +42,9 @@ export default function RootLayout({ children }) {
     )}
     suppressHydrationWarning
     >
+      <head>
+        <meta name="baidu-site-verification" content="codeva-MMXplx3EG1" />
+      </head>
       <meta name="theme-color" media="(prefers-color-scheme: light)" content="#fff" />
       <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#000" />
       <body
