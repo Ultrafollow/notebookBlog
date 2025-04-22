@@ -12,6 +12,7 @@ export const SITE_METADATA = {
     personalPicture: `${process.env.BASE_PATH || ''}/static/images/personalPic.jpg`,
     wechatQR: `${process.env.BASE_PATH || ''}/static/images/wechat-qr.jpg`,
     title:'day day up',
+    socialBanner: `${process.env.BASE_PATH || ''}/default-og.jpg`, 
     email: 'xuhlong3@mail2.sysu.edu.cn',
     github: 'https://github.com/Ultrafollow',
     wechat:'follow_loong',
