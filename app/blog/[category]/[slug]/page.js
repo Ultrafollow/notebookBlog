@@ -17,6 +17,7 @@ import { registerPrismLanguages } from '@/app/lib/lang'
 import rehypeCodeCopyButton from '@/components/Plugins/rehype-code-copy-button.mjs'
 import readingTime from 'reading-time';
 import Twemoji from '@/components/ui/Twemoji.js';
+import { SITE_METADATA } from '@/data/site-metadata'
 
 registerPrismLanguages()
  
@@ -125,8 +126,8 @@ export async function generateMetadata({ params }) {
 
     // 构建封面图URL
     const coverImage = post.coverImage 
-      ? new URL(post.coverImage, process.env.SITE_URL).toString()
-      : new URL('/default-og.jpg', process.env.SITE_URL).toString();
+      ? new URL(post.coverImage, process.env.SITE_METADATA.siteUrl).toString()
+      : new URL('/default-og.jpg', process.env.SITE_METADATA.siteUrl).toString();
 
     return {
       title: `${post.title} | ${decodedCategory}`,
