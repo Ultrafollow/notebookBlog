@@ -7,7 +7,7 @@ export function Container({
 }) {
   return (
     <Component className={clsx(
-      'mx-auto w-full max-w-7xl px-4 sm:px-6 xl:px-12',
+      'mx-auto w-full max-w-[65%] px-3 sm:px-6 xl:px-7',
       className
     )}>
       {children}

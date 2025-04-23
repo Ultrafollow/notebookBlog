@@ -49,6 +49,10 @@ html {
   }
 }
 
+.container-wrapper.container {
+  margin: 0 auto;
+}
+
 .container-wrapper {
     margin-bottom: 20px;
     display: flex; /* 启用弹性布局 */
@@ -56,8 +60,7 @@ html {
   
   /* 内容区域 */
   .container-wrapper .content-wrapper {
-    flex-grow: 1;    /* 占据剩余空间 */
-    flex-shrink: 1;  /* 允许收缩 */
+    flex: 0 0 calc(100% - 200px);
     border-right: 3px solid #ccc; /* 右侧分隔线 */
     padding-right: 10px;         /* 与TOC的间距 */
   }
@@ -66,8 +69,8 @@ html {
   .toc-wrapper {
     flex-grow: 0;     /* 保持固定宽度 */
     flex-shrink: 0;   /* 禁止收缩 */
-    min-width: 150px; /* 最小宽度 */
-    max-width: 280px;
+    min-width: 160px; /* 最小宽度 */
+    max-width: 300px;
     overflow: auto;   /* 内容溢出滚动 */
     
     /* 粘性定位 */
@@ -75,7 +78,7 @@ html {
     position: sticky;
     top: 80px;        /* 距离顶部距离 */
     height: fit-content; /* 高度适应内容 */
-    padding: 20px;    /* 内边距 */
+    padding: 6px;    /* 内边距 */
   }
   
   /* 移动端适配 */
@@ -85,6 +88,11 @@ html {
     }
     .content-wrapper {
       border-right: none; /* 移除分隔线 */
+    }
+  }
+  @media (min-width: 1700px) {
+    .container-wrapper .content-wrapper {
+      flex: 0 0 calc(100% - 400px);
     }
   }
   
@@ -155,7 +163,28 @@ html {
         @apply text-gray-600 dark:text-gray-400 dark:hover:text-gray-300;
         font-family: inherit !important;
     }
-  
+
+    ul {
+      @apply list-disc;
+    }
+    ul li {
+      @apply text-gray-700 dark:text-gray-300;
+      font-family: inherit !important;
+    }
+    ul li::marker {
+      @apply dark:text-gray-300;
+      color: #6b7280; /* gray-500 */
+    }
+
+    ul {
+      list-style-type: '• ';
+      @apply pl-6;
+    }
+
+    ol li {
+      @apply text-gray-700 dark:text-gray-300;
+    }
+
     pre, code {
         font-family: var(--font-mono) !important;
     }
@@ -189,7 +218,7 @@ html {
     img {
         @apply mx-auto mt-8 mb-14 block; /* 水平居中 + 上下边距 */
 
-        max-width: min(60%, 768px);  /* 最大宽度不超过768px */
+        max-width: min(80%, 750px) !important;  /* 最大宽度不超过768px */
         max-height: 70vh;             /* 最大高度为视口高度的70% */
         min-width: 20vw;             /* 最小宽度限制 */
         width: auto;                   /* 保持原始宽高比 */
