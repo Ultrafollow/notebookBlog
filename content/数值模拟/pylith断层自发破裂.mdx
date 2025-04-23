@@ -151,3 +151,53 @@ zero_tolerance_normal = 1.0e-8
 
 这几个收敛容差的设置有相对大小的要求，`snes_atol > zero_tolerance_normal > ksp_atol`。
 
+### 事件设置
+
+想要设置一个地震自发破裂事件，那么首先需要思考模型中驱动断层破裂的应力来自哪里。很多时候是来自于边界条件的传递。
+
+例如说在一个模型中，你给边界规定了一个位移边界条件，那么这个位移边界条件就会传递到模型内部，导致模型内部的应力发生变化。这个应力就会驱动断层破裂。例如：给模型south边界施加一个位移速率边界条件。
+
+```py:pylithapp.cfg
+[pylithapp.timedependent.bc.bc_south_crust]
+bc_dof = [0]
+db_initial = spatialdata.spatialdb.UniformDB
+db_initial.label = Dirichlet BC on crust south boundary
+db_initial.values = [displacement-x]
+db_initial.data = [0.0*m]
+
+db_rate.label = Dirichlet rate BC on -x
+db_rate = spatialdata.spatialdb.UniformDB
+db_rate.values = [displacement-rate-x,rate-start-time]
+db_rate.data = [5*cm/year,0.0*year]
+
+[pylithapp.timedependent]
+
+interfaces = [MCT]
+
+[pylithapp.timedependent.interfaces]
+MCT = pylith.faults.FaultCohesiveDyn
+
+[pylithapp.timedependent.interfaces.MCT]
+#The label corresponds to the name of the nodeset in CUBIT.
+zero_tolerance = 1.0e-9
+zero_tolerance_normal = 1.0e-9
+id = 25
+label = MCT
+edge = MCT_edge
+
+# We must define the quadrature information for fault cells.
+# The fault cells are 1D (line).
+quadrature.cell = pylith.feassemble.FIATSimplex
+quadrature.cell.dimension = 1
+
+# Friction
+friction = pylith.friction.StaticFriction
+friction.label = Static friction
+
+friction.db_properties = spatialdata.spatialdb.UniformDB
+friction.db_properties.label = Static friction
+friction.db_properties.values = [friction-coefficient,cohesion]
+friction.db_properties.data = [0.6,2.0*MPa]
+```
+
+之后选择断层的本构模型，设置断层的参数。其中：`id`为该断层在`Cubit node sets`中的`id`，`FaultCohesiveDyn`为该断层在`Pylith`中的本构模型。`StaticFriction`为该断层在`Pylith`中的摩擦模型。`friction-coefficient`和`cohesion`为断层的摩擦系数和粘聚力。
