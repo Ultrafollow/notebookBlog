@@ -1,22 +1,153 @@
 ---
-title: Pylith断层自发破裂
+title: 有限元数值模拟和Pylith断层自发破裂
 date: 2025-4-22
-tags: ['Pylith','Python','Cubit']
-summary: 'Pylith自发破裂模型的实现'
+tags: ['Pylith','Python','Cubit','FEM']
+summary: '有限元数值模拟以及Pylith自发破裂模型的实现'
 ---
 
 # 1 问题描述
 
+有限元的本质是一种求解微分方程的数值计算的方法。
+
+![模拟步骤](https://imgur.com/Wa5HiaN.png)
+
+微分方程求解困难，因此人们希望绕过求解微分方程，引入了虚功原理等，将微分方程转化成积分。而绕开微分方程需要我们一开始就去猜测结构受力后的位移，令这些位移满足对应的能量原理。但是如果猜错位移，那么就要承受猜错后带来的误差。而将结构分成多份，每一份猜得准不准就不重要了。
+
 在地震学中，断层`自发破裂`是指在地壳应力作用下，断层面上发生的自然破裂现象。它是地震发生的主要原因之一。断层自发破裂模型用于模拟和研究这种现象，以帮助科学家理解地震的发生机制和预测地震的影响。
 
-`Pylith`是一个用于地震模拟的开源软件包，它提供了强大的工具和功能来实现断层自发破裂模型。但是需要注意的是，Pylith在`v3+`版本中移除了多个断层本构模型，所以要实现断层自发破裂的模拟，需要使用`v2.2`版本的Pylith。
+PyLith是一种便传递、可扩展的软件，用于模拟从米到数百公里的空间尺度和从毫秒到数千年的时间尺度上的地壳变形。它的主要应用是地震断层的准静态和动态建模。它提供了强大的工具和功能来实现断层自发破裂模型。但是需要注意的是，Pylith在`v3+`版本移除了多个断层本构模型，所以要实现断层自发破裂的模拟，最好使用`v2.2.2`版本的Pylith。
 
 所谓断层自发破裂，即不人为规定断层的滑动速率或位移，而是让断层在应力作用下自然破裂。这个应力可以来着边界条件的传递，或者是模型初始条件（重力驱动）的传递。
 
 # 2 模拟步骤
 
-## 构建求解域
+## 1 构建求解域
 
-[Pylith](https://pylith.readthedocs.io/en/latest/index.html)官网中通常使用Cubit或是GMSH来构建求解域，这里我们使用`Cubit`来构建求解域。对于个人而言，`Cubit`的操作界面更加友好。只是在国内Cubit并不是免费使用，但如果认证学生身份，Cubit会提供免费的使用权限。但是这个权限也有限制，它会限制输出的网格的数量。
+[Pylith](https://pylith.readthedocs.io/en/latest/index.html)官网中通常使用Cubit或是Gmsh来构建求解域，这里我们使用`Cubit`来构建求解域。对于个人而言，`Cubit`的操作界面更加友好。只是在国内Cubit并不是免费使用，但如果认证学生身份，Cubit会提供免费的使用权限。当然这个权限也有限制，它会限制输出元素(elements)的数量。
 
+Pylith能够支持2D和3D的求解域。在官方的操作手册或是软件包的例子中，有许许多多的模型构建案例，很多时候并不需要你自行构建模型，你可以只是在他的案例中做些修改即可。
+
+需要指出的是，Pylith通常是使用`.cfg`文件来配置模拟参数的。其中Gmsh和Cubit的配置参数有所不同，需要修改配置文件中的一些字段，例如说v2.2.2版本中，Cubit模型`.exo`需要你声明字段`meshiocubit = 1`。除此之外，还有模型边界`id`需要全部设为1之类的小细节。
+
+还有一个需要十分注意的点，就是在使用`Cubit`构建模型时，你需要配合Pylith`pylithapp.cfg`中的设置。例如有一个二维的模型，你设置了：
+
+```python
+# North boundary
+[pylithapp.timedependent.bc.bc_north_crust]
+bc_dof = [0]
+label = bc_north_crust
+db_initial = spatialdata.spatialdb.UniformDB
+db_initial.label = Dirichlet BC on crust south boundary
+db_initial.values = [displacement-x]
+db_initial.data = [0.0*m]
+
+db_rate.label = Dirichlet rate BC on -x
+db_rate = spatialdata.spatialdb.UniformDB
+db_rate.values = [displacement-rate-x,rate-start-time]
+db_rate.data = [2*cm/year,0.0*year]
+
+# Bottom boundary
+[pylithapp.timedependent.bc.bc_north_mantle]
+bc_dof = [0]
+label = bc_bot
+db_initial.label = Dirichlet BC on bottom boundary
+```
+
+以上两个边界条件都是模型的north边界，这样设置有两种可能：
+
+- `bc_north_crust`和`bc_north_mantle`之间有节点(nodes)的重叠，那么就会导致冲突，Pylith会报错。原因在于`bc_north_crust`和`bc_north_mantle`的dof(自由度)被重复定义了。在三维模型构建中尤其需要注意。
+
+- 在模型构建时，认为消除重叠的node, Pylith正常运行。
+
+## 2 Pylith求解和后处理
+
+通常情况下，一个模拟需要多个文件，主要包括：
+
+- `pylithapp.cfg`：基本参数设置（材料、边界、求解器等）；
+- `simulation.cfg`：模拟事件设置（断层、事件时间循环等）；
+- `.spatialdb`：材料参数设置；
+- `.exo`：模型网格文件；
+- `output`：结果输出文件。
+
+由于官网对于配置文件的撰写已经描述地十分详尽，那么我们就不在这里赘述了。主要提出一些需要注意的细节。
+
+### 1 模拟时长
+
+```py:pylithapp.cfg
+[pylithapp.timedependent.formulation.time_step]
+# Define the total time for the simulation and the time step size.
+total_time = 300*year
+dt = 1*year
+```
+
+如果你将dt设置得过大，那么可能会导致模拟失败。因为Pylith在每一个时间步长中都要进行一次求解，它需要小于材料的松弛时间。如果你将dt设置得过小，那么可能会导致模拟时间过长，甚至是无法完成模拟。
+
+所以你可以先设置一个过大的`dt`，然后查看报错信息，Pylith会提示你dt的大小，不需要你再手动计算dt的大小。
+
+### 2 后处理
+
+在Pylith中，后处理通常是使用`Paraview`来进行的。Pylith会将模拟结果输出为`.vtk`格式的文件。你可以在`pylithapp.cfg`中设置输出文件的名称和路径。但是需要注意的是，Pylith会在每一个时间步长中输出一个文件，所以如果你设置的时间步长过小，那么可能会导致输出文件过多。
+
+所以我通常使用:
+
+```py:pylithapp.cfg
+# Domain
+[pylithapp.problem.formulation.output.domain]
+output_freq = time_step
+time_step = 0.25*year
+writer = pylith.meshio.DataWriterHDF5
+vertex_data_fields = [displacement,velocity]
+writer.filename = output/domain.h5
+
+# Ground surface
+[pylithapp.problem.formulation.output.subdomain]
+label = groundsurf ; Name of CUBIT nodeset for ground surface.
+writer = pylith.meshio.DataWriterHDF5
+writer.filename = output/subdomain.h5
+```
+
+这样只需要将`output`文件整体移动到你装载有`Paraview`的操作系统上，然后导入`.xmf`文件到paraview中即可。`.xmf`文件是一个XML格式的文件，它包含了所有的输出文件(`.h5`)的路径信息。所以需要你整体移动文件夹，否则xmf文件中的相对路径会失效。
+
+除此之外，你还可以使用`pyvista`来进行后处理。`pyvista`是一个Python库，它可以读取`.h5`文件，并且可以进行可视化。这样出图时自由度高，你可以使用该python库来定制可视化结果。
+
+### 3 求解器参数设置
+
+求解过程主要有这么几个收敛容差：
+
+```python
+# ----------------------------------------------------------------------
+# PETSc
+# ----------------------------------------------------------------------
+
+[pylithapp.petsc]
+malloc_dump =
+
+# Convergence parameters.
+ksp_rtol = 1.0e-20
+ksp_atol = 1.0e-9
+ksp_max_it = 10000
+ksp_gmres_restart = 50
+
+snes_rtol = 1.0e-20
+snes_atol = 1.0e-6
+
+snes_max_it = 100000
+
+friction_pc_type = asm
+friction_sub_pc_factor_shift_type = nonzero
+friction_ksp_max_it = 25
+friction_ksp_gmres_restart = 30
+friction_ksp_error_if_not_converged = true
+
+# Slab bot --------------------
+[pylithapp.timedependent.interfaces.moho]
+# The label corresponds to the name of the nodeset in CUBIT.
+zero_tolerance = 1.0e-8
+zero_tolerance_normal = 1.0e-8
+... more fault parameters
+```
+
+其中`ksp_rtol`和`snes_rtol`是求解器的收敛容差，`ksp_atol`和`snes_atol`是求解器的绝对容差。`ksp_max_it`和`snes_max_it`是求解器的最大迭代次数。`zero_tolerance_normal`和`zero_tolerance`是断层的收敛容差，控制断层破裂与否(?)。
+
+这几个收敛容差的设置有相对大小的要求，`snes_atol > zero_tolerance_normal > ksp_atol`。
 
