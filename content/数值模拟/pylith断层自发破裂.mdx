@@ -55,9 +55,9 @@ db_initial.label = Dirichlet BC on bottom boundary
 
 以上两个边界条件都是模型的north边界，这样设置有两种可能：
 
-- `bc_north_crust`和`bc_north_mantle`之间有节点(nodes)的重叠，那么就会导致冲突，Pylith会报错。原因在于`bc_north_crust`和`bc_north_mantle`的dof(自由度)被重复定义了。在三维模型构建中尤其需要注意。
+1. `bc_north_crust`和`bc_north_mantle`之间有节点(nodes)的重叠，那么就会导致冲突，Pylith会报错。原因在于`bc_north_crust`和`bc_north_mantle`的dof(自由度)被重复定义了。在三维模型构建中尤其需要注意。
 
-- 在模型构建时，认为消除重叠的node, Pylith正常运行。
+2. 在模型构建时，认为消除重叠的node, Pylith正常运行。
 
 ## 2 Pylith求解和后处理
 
@@ -101,7 +101,7 @@ writer.filename = output/domain.h5
 
 # Ground surface
 [pylithapp.problem.formulation.output.subdomain]
-label = groundsurf ; Name of CUBIT nodeset for ground surface.
+label = groundsurf ; # Name of CUBIT nodeset for ground surface.
 writer = pylith.meshio.DataWriterHDF5
 writer.filename = output/subdomain.h5
 ```
