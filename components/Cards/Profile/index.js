@@ -63,7 +63,7 @@ export function ProfileCard() {
     return (
       /* 外层容器：控制透视和悬停缩放 */
       <div 
-        className="z-10 mb-8 scale-100 transition-all duration-200 ease-out hover:z-50 md:mb-0 md:hover:scale-[1.15]"
+        className="z-10 mb-8 scale-[200px] transition-all duration-200 ease-out hover:z-50 md:mb-0 md:hover:scale-[1.15]"
         style={{ perspective: '600px' }} // 创建3D透视空间
         ref={ref} // 绑定DOM引用
       >

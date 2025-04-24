@@ -16,11 +16,11 @@ export function AuthorLayout() {
             Further insights into who I am and the purpose of this blog.
           </p>
         </div>
-        <div className="py-8 md:grid md:grid-cols-3">
-            <div className="pr-4">
+        <div className="py-8 grid md:grid-cols-[350px_1fr] gap-8 max-w-screen-xl mx-auto">
+            <div className="w-[350px] md:w-full md:max-w-[350px]">
                 <ProfileCard />
             </div>
-            <div className="md:col-span-2 md:pl-12 xl:pl-16">
+            <div className="min-w-0">
                 <div className="prose prose-lg dark:prose-invert">
                     <div>
                         <h2 className="mt-0">

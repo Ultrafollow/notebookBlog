@@ -36,7 +36,8 @@ export function Home () {
                             </div>
                         </div>
                         {/* 右侧边栏 */}
-                        <div className="hidden pl-4 xl:block">
+                        {/* <div className="hidden pl-4 xl:block"> */}
+                        <div className='hidden pl-4 xl:block w-[360px] flex-shrink-0'>
                             <ProfileCard />
                         </div>
                     </div>
