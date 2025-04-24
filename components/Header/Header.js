@@ -9,6 +9,7 @@ import { HEADER_NAV_LINKS } from '@/data/navigation'
 import { SITE_METADATA } from '@/data/site-metadata'
 import { Logo } from './Logo'
 import { ThemeSwitcher } from './Theme-switcher'
+import DocSearch from '@/components/Search/DocSearch'
 
 export function Header() {
   let pathname = usePathname()
@@ -26,6 +27,7 @@ export function Header() {
             <Logo />
         <div className="flex items-center gap-4">
           <div className="hidden gap-1.5 sm:flex">
+            <DocSearch />
             {HEADER_NAV_LINKS.map(({ title, href }) => {
               let isActive = pathname.startsWith(href)
               return (
