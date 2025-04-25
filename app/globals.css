@@ -249,3 +249,7 @@ html {
       text-align: center;
     }
 }
+
+.dark .ant-tree {
+  @apply dark:bg-[#282a36] dark:text-gray-300;
+  }

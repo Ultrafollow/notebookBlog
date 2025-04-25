@@ -18,6 +18,7 @@ import rehypeCodeCopyButton from '@/components/Plugins/rehype-code-copy-button.m
 import readingTime from 'reading-time';
 import Twemoji from '@/components/ui/Twemoji.js';
 import { SITE_METADATA } from '@/data/site-metadata'
+import { TreeWrapper } from '@/components/Plugins/Antd';
 
 registerPrismLanguages()
  
@@ -209,7 +210,9 @@ export default async function PostPage({ params }) {
       </header>
  
       <div className="space-y-8">
-          <MDXComponent />
+          <MDXComponent components={{
+            TreeWrapper
+          }}/>
       </div>
       <span className="block w-full h-1 bg-gradient-to-r from-red-400 via-lime-500 to-purple-600" />
     </Container>
