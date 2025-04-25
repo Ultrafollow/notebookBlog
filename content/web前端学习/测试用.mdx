@@ -17,14 +17,30 @@ summary: 'In any application involving booking hotel rooms, flight seats, or sim
 
 <TreeWrapper
     treeData={[
-        {title: '18.01', children: [
-            { title: '1801的第1篇文章', children:[
-                {title: '180102的第1篇文章.mdx', isLeaf: true},
-            ]},
-            { title: '1801的第2篇文章.mdx', isLeaf: true},]},
-        {title: '18.02', children: [{ title: '1802的第1篇文章.mdx', isLeaf: true},
-            { title: '1802的第2篇文章.mdx', isLeaf: true},
-            { title: '1802的第3篇文章.mdx', isLeaf: true}]},
+        {
+            title: 'parent 0',
+            key: '0-0',
+            children: [
+
+            { title: 'leaf 0-0', key: '0-0-0', isLeaf: true },
+
+            { title: 'leaf 0-1', key: '0-0-1', children:[
+                {title: 'leaf 0-1-0', key: '0-0-1-0', isLeaf: true },
+            ] },
+
+            ],
+        },
+        {
+            title: 'parent 1',
+            key: '0-1',
+            children: [
+
+            { title: 'leaf 1-0', key: '0-1-0', isLeaf: true },
+
+            { title: 'leaf 1-1', key: '0-1-1', isLeaf: true },
+            
+            ],
+        },
         ]}
 />
 
