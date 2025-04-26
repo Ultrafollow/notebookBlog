@@ -29,7 +29,7 @@ Pylith能够支持2D和3D的求解域。在官方的操作手册或是软件包�
 
 需要指出的是，Pylith通常是使用`.cfg`文件来配置模拟参数的。其中Gmsh和Cubit的配置参数有所不同，需要修改配置文件中的一些字段，例如说v2.2.2版本中，Cubit模型`.exo`需要你声明字段`meshiocubit = 1`。除此之外，还有模型边界`id`需要全部设为1之类的小细节。
 
-还有一个需要十分注意的点，就是在使用`Cubit`构建模型时，你需要配合Pylith`pylithapp.cfg`中的设置。例如有一个二维的模型，你设置了：
+还有一个需要十分注意的点，当在`pylithapp.cfg`中设置边界条件时，需要适配`Cubit`模型的`Node Sets`。例如有一个二维的模型，你设置了：
 
 ```python
 # North boundary
@@ -57,7 +57,17 @@ db_initial.label = Dirichlet BC on bottom boundary
 
 1. `bc_north_crust`和`bc_north_mantle`之间有节点(nodes)的重叠，那么就会导致冲突，Pylith会报错。原因在于`bc_north_crust`和`bc_north_mantle`的dof(自由度)被重复定义了。在三维模型构建中尤其需要注意。
 
-2. 在模型构建时，认为消除重叠的node, Pylith正常运行。
+2. 在模型构建时，人为消除重叠的node, Pylith正常运行。
+
+一般用于消除重叠的node的方法：
+
+```py:cubit.jou
+cubit.cmd("group 'bc_south_mantle' add node in curve 26")
+## 移除指定节点
+cubit.cmd("group 'bc_south_mantle' remove node in vertex 6")
+cubit.cmd("nodeset 31 group bc_south_mantle")
+cubit.cmd("nodeset 31 name 'bc_south_mantle'")
+```
 
 ## 2.2 Pylith求解和后处理
 
