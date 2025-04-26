@@ -21,7 +21,7 @@ PyLith是一种便传递、可扩展的软件，用于模拟从米到数百公�
 
 # 2 模拟步骤
 
-## 1 构建求解域
+## 2.1 构建求解域
 
 [Pylith](https://pylith.readthedocs.io/en/latest/index.html)官网中通常使用Cubit或是Gmsh来构建求解域，这里我们使用`Cubit`来构建求解域。对于个人而言，`Cubit`的操作界面更加友好。只是在国内Cubit并不是免费使用，但如果认证学生身份，Cubit会提供免费的使用权限。当然这个权限也有限制，它会限制输出元素(elements)的数量。
 
@@ -59,7 +59,7 @@ db_initial.label = Dirichlet BC on bottom boundary
 
 2. 在模型构建时，认为消除重叠的node, Pylith正常运行。
 
-## 2 Pylith求解和后处理
+## 2.2 Pylith求解和后处理
 
 通常情况下，一个模拟需要多个文件，主要包括：
 
@@ -71,7 +71,7 @@ db_initial.label = Dirichlet BC on bottom boundary
 
 由于官网对于配置文件的撰写已经描述地十分详尽，那么我们就不在这里赘述了。主要提出一些需要注意的细节。
 
-### 1 模拟时长
+### 2.2.1 模拟时长
 
 ```py:pylithapp.cfg
 [pylithapp.timedependent.formulation.time_step]
@@ -84,7 +84,7 @@ dt = 1*year
 
 所以你可以先设置一个过大的`dt`，然后查看报错信息，Pylith会提示你dt的大小，不需要你再手动计算dt的大小。
 
-### 2 后处理
+### 2.2.2 后处理
 
 在Pylith中，后处理通常是使用`Paraview`来进行的。Pylith会将模拟结果输出为`.vtk`格式的文件。你可以在`pylithapp.cfg`中设置输出文件的名称和路径。但是需要注意的是，Pylith会在每一个时间步长中输出一个文件，所以如果你设置的时间步长过小，那么可能会导致输出文件过多。
 
@@ -110,7 +110,7 @@ writer.filename = output/subdomain.h5
 
 除此之外，你还可以使用`pyvista`来进行后处理。`pyvista`是一个Python库，它可以读取`.h5`文件，并且可以进行可视化。这样出图时自由度高，你可以使用该python库来定制可视化结果。
 
-### 3 求解器参数设置
+### 2.2.3 求解器参数设置
 
 求解过程主要有这么几个收敛容差：
 
@@ -151,7 +151,7 @@ zero_tolerance_normal = 1.0e-8
 
 这几个收敛容差的设置有相对大小的要求，`snes_atol > zero_tolerance_normal > ksp_atol`。
 
-### 4 事件设置
+### 2.2.4 事件设置
 
 想要设置一个地震自发破裂事件，那么首先需要思考模型中驱动断层破裂的应力来自哪里。很多时候是来自于边界条件的传递。
 

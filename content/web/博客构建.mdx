@@ -95,3 +95,222 @@ npx create-next-app@latest my-blog
 
 创建完项目脚手架后，我们进入项目根目录`my-blog`,对以下文件进行修改：
 
+```js:next.config.js
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+  webpack: (config) => {
+    // 添加 SVG 处理规则
+    config.module.rules.push({
+      test: /\.svg$/,
+      use: ['@svgr/webpack']
+    });
+    return config;
+  },
+  images: {
+    dangerouslyAllowSVG: true,
+    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;"
+  }
+}
+ 
+module.exports = (nextConfig)
+```
+
+以上配置文件的作用是：
+
+- 允许在生产环境中忽略ESlint错误
+- 添加SVG处理规则
+- 允许使用SVG图片，并设置内容安全策略
+
+为什么要在生产环境中忽略ESlint错误？因为在build的过程中，ESlint会检查代码的规范性，如果有错误会导致build失败。而我在开发过程中缺少经验，使用了许多不规范的代码形式，导致build失败。选择忽略ESlint错误，能够使得build成功进行下去。
+
+如果项目中需要用到SVG图片，并希望SVG图片能够被作为组件使用，那么就需要添加SVG处理规则。
+
+```js:example_svg.js
+import NextJsIcon from '@/icon/nextjs-fill.svg';
+<NextJsIcon className="h-5 w-5 text-gray-800 dark:text-gray-100 transition-colors" />
+```
+
+再就是样式文件的配置：
+
+```js:tailwind.config.js
+/** @type {import('tailwindcss').Config} */
+const colors = require('tailwindcss/colors')
+const { fontFamily } = require('tailwindcss/defaultTheme')
+
+module.exports = {
+    // tailwind css 能够作用的文件路径
+    content: [
+        "./app/**/*.{js,ts,jsx,tsx}",
+        "./components/**/*.{js,ts,jsx,tsx}",
+        './pages/**/*.{js,ts,tsx}',
+        "./content/**/*.{md,mdx}",
+        './Layouts/**/*.{js,ts,tsx}',
+      ],
+    darkMode: 'class',
+    theme: {
+      extend: {
+        ...加入你的自定义配置
+        }
+    }
+}    
+```
+
+```css:globals.css
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+/* 加入你的自定义样式 */
+```
+
+最后还有简化路径的配置：
+
+```js:jsconfig.json
+{
+  "compilerOptions": {
+    "paths": {
+      "@/*": ["./*"]
+    }
+  }
+}
+```
+
+至此，大致的项目脚手架搭建完成。
+
+# 5 核心功能
+
+## 5.1 mdx转译
+
+在`app\blog\[category]\[slug]\page.js`中，我们需要使用`mdx-bundler`将mdx文件转译成React组件。具体的代码如下：
+
+```js:app\blog\\[category]\\[slug]\\page.js
+const { code } = await bundleMDX({
+    source: mdxSource, // mdx文件的内容
+    cwd:path.join(process.cwd(), 'app', 'components', 'Plugins'), // 自定义插件的路径
+    mdxOptions: (options, frontmatter) => {
+    options.remarkPlugins = [...(options.remarkPlugins ?? []), ...[你想加入的插件]]
+    options.rehypePlugins = [...(options.rehypePlugins ?? []), ...[
+        你想加入的插件
+    ]]
+    return options
+    },
+    esbuildOptions: options => {
+    options.outdir = path.join(process.cwd(), 'public')
+    options.write = true
+    return options
+    }
+})
+
+return {
+    code,
+    frontmatter: {
+    ...post,
+    date: post.date,
+    }
+}
+
+...
+
+const MDXComponent = getMDXComponent(code)
+
+<MDXComponent components={{
+            自定义组件
+          }}/>
+```
+
+首先配置好转译器`bundleMDX`，然后使用`getMDXComponent`将mdx文件转译成React组件，最后在页面中渲染这个组件。
+
+## 5.2 搜索功能
+
+在`app\blog\page.js`中，我们需要实现搜索功能。具体的代码如下：
+
+```js
+export default function ListLayout({
+  posts,          // 全部原始文章数据（始终基于完整数据集）
+  initialDisplayPosts = [],  // 初始分页数据
+  pagination,
+  title
+}) {
+  const [isLoading, setIsLoading] = useState(true)
+  const [searchValue, setSearchValue] = useState('')
+  const [selectedTags, setSelectedTags] = useState([])
+	  
+  useEffect(() => {
+    // 数据加载完成后关闭加载状态
+    setIsLoading(false)
+  }, [posts]) // 当 posts 数据变化时触发
+
+  // 标签点击处理（每次点击都基于完整数据集重新筛选）
+  const handleTagClick = (tag) => {
+    setSelectedTags(prev => 
+      prev.includes(tag) 
+        ? prev.filter(t => t !== tag)  // 移除标签
+        : [...prev, tag]               // 添加标签
+    )
+  }
+
+  const filteredPosts = posts.filter(post => {
+
+    const tagMatch = selectedTags.length === 0 || 
+      selectedTags.every(tag => post.tags?.includes(tag))
+    
+    const searchMatch = (post.title + (post.summary || '') + (post.category || '') + (post.tags || ''))
+      .toLowerCase()
+      .includes(searchValue.toLowerCase())
+
+    return tagMatch && searchMatch
+  })
+}
+
+...
+<span
+key={tag}
+className={`rounded-lg px-3 py-1 text-sm font-medium cursor-pointer transition-colors
+        ${
+            selectedTags.includes(tag)
+            ? 'bg-primary-400 text-white dark:bg-primary-300 dark:text-gray-900'
+            : 'bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-primary-600 dark:text-primary-300'
+        }`}
+onClick={(e) => {
+    e.stopPropagation() // 阻止事件冒泡
+    handleTagClick(tag)
+}}
+>
+{tag}
+</span>
+```
+
+搜索的逻辑是：根据文章`title`、`summary`、`category`和`tags`进行搜索。使用`useState`和`useEffect`来管理搜索状态和加载状态。使用`filter`方法对文章进行筛选。并且给tags一个点击按钮，能够让用户点击标签得到含有该标签的所有文章。
+
+## 5.3 代码高亮
+
+我选用prismjs及其样式文件。首先从[仓库](https://github.com/PrismJS/prism-themes/tree/master/themes)中选择一个你喜欢的代码高亮样式文件，引入到你的项目中。然后注册代码语言，这样代码就能高亮显示。
+
+```js:layout.js
+import '@/app/prism-dracula.css'
+```
+```js:lib.js
+import { refractor } from 'refractor' 
+import js from 'refractor/lang/javascript'
+import py from 'refractor/lang/python'
+import css from 'refractor/lang/css'
+import bash from 'refractor/lang/bash'
+import json from 'refractor/lang/json'
+import sql from 'refractor/lang/sql'
+
+export function registerPrismLanguages() {
+  // 注册所有需要的语言
+    refractor.register(js)
+    refractor.register(py)
+    refractor.register(css)
+    refractor.register(bash)
+    refractor.register(json)
+    refractor.register(sql)
+}
+```
+```js:page.js
+import { registerPrismLanguages } from '@/app/lib/lib.js'
+registerPrismLanguages()
+```
