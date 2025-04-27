@@ -253,3 +253,13 @@ html {
 .dark .ant-tree {
   @apply dark:bg-[#282a36] dark:text-gray-300;
   }
+
+mjx-container[jax="SVG"][display="true"] {
+  display: block !important;
+  margin: 1em auto !important;
+}
+  
+mjx-container[jax="SVG"] > svg {
+  margin: 0 auto !important;
+  display: block !important;
+}

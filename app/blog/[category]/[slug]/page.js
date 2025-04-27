@@ -15,6 +15,8 @@ import { Container } from '@/components/ui/Container'
 import rehypeTocExt from '@/components/Plugins/Rehype-toc-ext'
 import { registerPrismLanguages } from '@/app/lib/lang'
 import rehypeCodeCopyButton from '@/components/Plugins/rehype-code-copy-button.mjs'
+import remarkMath from 'remark-math'
+import rehypeMathjax from 'rehype-mathjax'
 import readingTime from 'reading-time';
 import Twemoji from '@/components/ui/Twemoji.js';
 import { SITE_METADATA } from '@/data/site-metadata'
@@ -77,7 +79,11 @@ export async function getPost(params) {
       source: mdxSource,
       cwd:path.join(process.cwd(), 'app', 'components', 'Plugins'),
       mdxOptions: (options, frontmatter) => {
-        options.remarkPlugins = [...(options.remarkPlugins ?? []), ...[remarkGfm, remarkCodeTitles]]
+        options.remarkPlugins = [...(options.remarkPlugins ?? []), ...[
+          remarkGfm,
+          remarkCodeTitles,
+          [remarkMath, { singleDollarTextMath: false }],
+        ]]
         options.rehypePlugins = [...(options.rehypePlugins ?? []), ...[
           rehypeSlug,
           [rehypeAutolinkHeadings, { behavior: 'wrap' }],
@@ -85,6 +91,8 @@ export async function getPost(params) {
           rehypeCodeCopyButton,
           toc,
           rehypeTocExt,
+          [rehypeMathjax,{
+          }],
         ]]
         return options
       },
@@ -165,7 +173,6 @@ export default async function PostPage({ params }) {
  
   const { code, frontmatter } = result
   const MDXComponent = getMDXComponent(code)
- 
   return (
     <Container className='mb-[200px] max-w-[60%] py-8'>
       {/* 上部 - 文章元信息 */}
