@@ -211,3 +211,83 @@ friction.db_properties.data = [0.6,2.0*MPa]
 ```
 
 之后选择断层的本构模型，设置断层的参数。其中：`id`为该断层在`Cubit node sets`中的`id`，`FaultCohesiveDyn`为该断层在`Pylith`中的本构模型。`StaticFriction`为该断层在`Pylith`中的摩擦模型。`friction-coefficient`和`cohesion`为断层的摩擦系数和粘聚力。
+
+### 2.2.5 断层参数设置
+
+首先需要确定断层的类型，断层有正断层、逆断层、走滑断层。除了垂直的走滑断层，通常需要设置`traction`字段。
+
+以下是一个断层的参数设置示例：
+
+```py:pylithapp.cfg
+[pylithapp.timedependent]
+interfaces = [MCT]
+# # Set the type of fault interface condition.
+[pylithapp.timedependent.interfaces]
+MCT = pylith.faults.FaultCohesiveDyn
+
+[pylithapp.timedependent.interfaces.MCT]
+#The label corresponds to the name of the nodeset in CUBIT.
+zero_tolerance = 1.0e-8
+zero_tolerance_normal = 1.0e-8
+id = 25
+label = MCT
+edge = MCT_edge
+
+# We must define the quadrature information for fault cells.
+# The fault cells are 1D (line).
+quadrature.cell = pylith.feassemble.FIATSimplex
+quadrature.cell.dimension = 1
+
+# Friction
+friction = pylith.friction.StaticFriction
+friction.label = Static friction
+
+friction.db_properties = spatialdata.spatialdb.UniformDB
+friction.db_properties.label = Static friction
+friction.db_properties.values = [friction-coefficient,cohesion]
+friction.db_properties.data = [0.6,0.0*MPa]
+
+# Initial tractions
+traction_perturbation = pylith.faults.TractPerturbation
+
+[pylithapp.timedependent.interfaces.MCT.traction_perturbation]
+db_initial = spatialdata.spatialdb.SimpleDB
+db_initial.label = Initial MCT tractions
+db_initial.iohandler.filename = ./spatialdb/fault_traction-domain.spatialdb
+db_initial.query_type = nearest
+```
+
+常规自发破裂断层的配置步骤：
+
+1. 声明断层名称
+2. 声明断层模型
+3. 声明断层在模型中的id和断层破裂阈值
+4. 设置有限元基函数，三角形cells和四边形cells有各自的基函数，注意区别
+5. 声明摩擦本构模型
+6. 设置traction数据库类型和路径
+
+其中，`FaultCohesiveDyn`是pylith2.2.2中断层自发破裂的模型。`pylith.feassemble.FIATSimplex`是针对三角形cells的基函数。`Static friction`是摩擦本构模型。`pylith.faults.TractPerturbation`是断层重力拖曳力和traction_change造成的应力扰动。`SimpleDB`是pylith中的数据库类型。
+
+断层模型有以下三个主要选择：
+- `FaultCohesiveDyn`：自发破裂，需要设置摩擦和内聚力；
+- `FaultCohesiveKin`：人为规定断层滑动参数，如速率、滑移量；
+- `FaultCohesiveImpulses `：瞬间施加的断层滑动，即瞬态地震触发与传播，需要规定`slip`相关参数；
+
+再选择以上三个主要的断层本构模型之后，需要配置相关参数的其他本构模型。
+
+1. `FaultCohesiveDyn`：需要设置摩擦本构模型并可选应力扰动模型：
+- `StaticFriction`：静态摩擦模型；
+- `SlipWeakening`: 滑动弱化模型；
+- `RateStateAgeing`: 速率状态老化模型；
+- `TimeWeakening`: 时间弱化模型；
+- `TractPerturbation`：断层重力拖曳力和traction_change造成的应力扰动；
+
+2. `FaultCohesiveKin`：需要设置slip本构模型：
+- `StepSlipFn`: 阶跃函数滑动时间函数,（程序默认模型）；
+- `ConstRateSlipFn`: 恒定滑动速率状态模型；
+- `TimeHistorySlipFn`: 时间历史滑动模型；
+
+3. `FaultCohesiveImpulses`：需要设置slip参数：
+- 限制`impulse_dof`：脉冲自由度；
+- 规定`db_impulse_amplitude`数据；
+
