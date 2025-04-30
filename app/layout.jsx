@@ -45,9 +45,15 @@ export default function RootLayout({ children }) {
       <head>
         <meta name="baidu-site-verification" content="codeva-MMXplx3EG1" />
         <meta name="msvalidate.01" content="E6102F9220389FDC31EFF5A009FDE6A5" />
+        <meta name="theme-color" media="(prefers-color-scheme: light)" content="#fff" />
+        <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#000" />
+        <link
+          rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"
+          integrity="sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI+WdtXRGWt2kTvGFasHpSy3SV"
+          crossOrigin="anonymous"
+        />
       </head>
-      <meta name="theme-color" media="(prefers-color-scheme: light)" content="#fff" />
-      <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#000" />
       <body
         className={clsx([
           'antialiased',

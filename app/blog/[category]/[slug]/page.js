@@ -16,7 +16,7 @@ import rehypeTocExt from '@/components/Plugins/Rehype-toc-ext'
 import { registerPrismLanguages } from '@/app/lib/lang'
 import rehypeCodeCopyButton from '@/components/Plugins/rehype-code-copy-button.mjs'
 import remarkMath from 'remark-math'
-import rehypeMathjax from 'rehype-mathjax'
+import rehypeKatex from 'rehype-katex'
 import readingTime from 'reading-time';
 import Twemoji from '@/components/ui/Twemoji.js';
 import { SITE_METADATA } from '@/data/site-metadata'
@@ -82,17 +82,16 @@ export async function getPost(params) {
         options.remarkPlugins = [...(options.remarkPlugins ?? []), ...[
           remarkGfm,
           remarkCodeTitles,
-          [remarkMath, { singleDollarTextMath: false }],
+          [remarkMath, { singleDollarTextMath: true }],
         ]]
         options.rehypePlugins = [...(options.rehypePlugins ?? []), ...[
           rehypeSlug,
           [rehypeAutolinkHeadings, { behavior: 'wrap' }],
+          rehypeKatex,
           [rehypePrismPlus, { ignoreMissing: false, showLineNumbers: true}],
           rehypeCodeCopyButton,
           toc,
           rehypeTocExt,
-          [rehypeMathjax,{
-          }],
         ]]
         return options
       },

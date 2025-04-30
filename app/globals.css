@@ -254,12 +254,39 @@ html {
   @apply dark:bg-[#282a36] dark:text-gray-300;
   }
 
-mjx-container[jax="SVG"][display="true"] {
-  display: block !important;
-  margin: 1em auto !important;
+/* 所有行间公式容器 */
+.dark .katex-display {
+  color: #fff !important; /* 强制白色 */
 }
-  
-mjx-container[jax="SVG"] > svg {
-  margin: 0 auto !important;
-  display: block !important;
+ 
+/* 覆盖 KaTeX 内部元素 */
+.dark .katex-display .katex,
+.dark .katex-display .katex-mathml,
+.dark .katex-display .katex-html,
+.dark .katex-display .base,
+.dark .katex-display .strut,
+.dark .katex-display .mord,
+.dark .katex-display .mrel,
+.dark .katex-display .mspace,
+.dark .katex-display .msupsub,
+.dark .katex-display .mfrac,
+.dark .katex-display .mtable,
+.dark .katex-display .minner,
+.dark .katex-display .mopen,
+.dark .katex-display .mclose,
+.dark .katex-display .mrow {
+  color: inherit !important; /* 继承父级颜色 */
+  border-color: currentColor !important; /* 修复边框颜色 */
+}
+ 
+/* 特殊符号修正 */
+.dark .katex-display .mrel,
+.dark .katex-display .mspace {
+  color: currentColor !important;
+}
+ 
+/* 矩阵/多行公式适配 */
+.dark .katex-display .mtable > .col-align-c > .vlist-t,
+.dark .katex-display .mtable > .col-align-c > .vlist-t > .vlist-r > .vlist {
+  color: inherit !important;
 }

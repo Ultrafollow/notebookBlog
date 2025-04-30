@@ -1,8 +1,11 @@
+'use client'
 import { clsx } from 'clsx'
 import { Image } from '@/components/ui/Image'
 import { Link } from '@/components/ui/Link'
 import { SITE_METADATA } from '@/data/site-metadata'
 import { GrowingUnderline } from '@/components/ui/Growing-underline'
+import { TITLE_PATH} from '@/components/ui/SvgPath'
+
 
 export function Logo(className) {
   return (
