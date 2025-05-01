@@ -4,10 +4,9 @@ import { Image } from '@/components/ui/Image'
 import { Link } from '@/components/ui/Link'
 import { SITE_METADATA } from '@/data/site-metadata'
 import { GrowingUnderline } from '@/components/ui/Growing-underline'
-import { animate, createScope, createSpring, createDraggable } from 'animejs';
-import { useEffect, useRef, useState } from 'react'
-import { TITLE_PATH} from '@/components/ui/SvgPath'
-
+import { createTimeline, animate, createScope, createSpring, createDraggable, svg} from 'animejs';
+import { useEffect, useRef } from 'react'
+import { TITLE_PATH } from '@/components/ui/SvgPath'
 
 export function Logo(className) {
   const root = useRef(null)
@@ -15,7 +14,7 @@ export function Logo(className) {
   useEffect(() => {
   
     scope.current = createScope({ root }).add( self => {
-      animate('.logo', {
+      const Logobounce = animate('.logo', {
         scale: [
           { to: 1.25, ease: 'inOut(3)', duration: 200 },
           { to: 1, ease: createSpring({ stiffness: 300 }) }
@@ -28,11 +27,24 @@ export function Logo(className) {
         container: [0, 0, 0, 0],
         releaseEase: createSpring({ stiffness: 200 })
       });
+      const Svgpath = animate(svg.createDrawable('.line'), {
+        draw: ['0 0', '0 1'],
+        stroke:"currentColor" ,
+        ease: 'inOutQuad',
+        duration: 3000,
+        loop: false,
+      });
+      const t1 = createTimeline()
+      .sync(Svgpath)
+      .add('.line',{
+        fill: ['transparent','currentColor'], 
+        duration: 1000,
+        easing: 'easeInOutQuad'
+      },'-=2000')
     });
     return () => scope.current.revert()
 
   }, []);
-
 
   return (
     <div ref={root} className='flex items-center gap-2 rounded-xl p-2'>
@@ -44,16 +56,31 @@ export function Logo(className) {
         className="logo h-10 w-10 rounded-xl"
         loading="eager"
       />
+      <GrowingUnderline className='hover:bg-[length:100%_50%] duration-[1000ms]'>
       <Link
         href="/"
         aria-label={SITE_METADATA.headerTitle}
       >
-        <GrowingUnderline
-          className="font-greeting hover:'bg-[length:100%_50%]'"
-        >
-          FollowXu
-        </GrowingUnderline>
+        <div className='h-10 w-40'>
+          <svg viewBox="300 17000 21000 1200" className={clsx('h-10 w-10', className)} style={{ 
+            transform: 'scale(4)',
+            transformOrigin: 'left top'
+          }}>
+            <g
+              fillRule="evenodd"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="50"
+            >
+              <path stroke="transparent" 
+              fill='transparent' 
+              className='line' 
+              d={TITLE_PATH} />
+            </g>
+          </svg>
+        </div>
       </Link>
+      </GrowingUnderline>
     </div>
   )
 }
