@@ -1,6 +1,5 @@
 import {clsx} from "clsx";
 import TitleGrid from "@/icon/tilted-grid.svg";
-import Hexagon from "@/icon/hexagon.svg";
 
 export function TiltedGridBackground({ className }) {
     return (
@@ -18,14 +17,6 @@ export function TiltedGridBackground({ className }) {
             'fill-black/[0.02] stroke-black/5',
           ])}
         />
-        {/* <Hexagon
-          className={clsx([
-            'h-[160%] w-full',
-            'absolute inset-x-0 inset-y-0',
-            'dark:fill-white/[.001] dark:stroke-white/[.0025]',
-            'fill-black/[0.02] stroke-black/5',
-          ])}
-        /> */}
       </div>
     )
   }
