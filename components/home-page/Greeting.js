@@ -4,8 +4,8 @@ import Twemoji from '../ui/Twemoji.js';
 const GreetingComponent = () => {
   const className = clsx(
     'font-greeting',
-    'bg-gradient-to-r from-lime-500 to-pink-800 dark:bg-gradient-to-l dark:from-indigo-600 dark:to-lime-300',
-    'mb-8 bg-clip-text text-4xl font-extrabold leading-[60px] tracking-tight text-transparent md:text-7xl md:leading-[86px]'
+    'bg-gradient-to-r from-teal-500 via-teal-300 via-violet-400 to-violet-500 dark:bg-gradient-to-l dark:from-indigo-600 dark:to-lime-300',
+    'mb-8 bg-clip-text text-[33px] font-extrabold leading-[60px] tracking-tight text-transparent md:text-7xl md:leading-[86px]'
   );
 
   return (
