@@ -32,6 +32,7 @@ export default function AnimatedThemeSwitch() {
     isAnimating.current = true
     const isDark = theme === 'dark';
     const newTheme = isDark ? 'light' : 'dark';
+
     const tl = createTimeline({
       easing: 'easeOutExpo',
       duration: 1050,
@@ -42,13 +43,13 @@ export default function AnimatedThemeSwitch() {
     });
 
     tl.add('.face',{
-      translateX: isDark ? -1 : 40,
+      translateX: isDark ? 0 : 40,
       rotate: isDark ? -360 : 360,
       backgroundColor: isDark ? 'rgb(243,255,148)':'rgb(110,240,225)' ,
-    }, 500)
+    }, 0)
     .add('.switchBG',{
       backgroundColor: isDark ? 'rgb(255,117,165)':'rgb(91,56,115)',
-    }, 500)
+    }, 0)
     .add('.eye-left',{
       d: !isDark ? EYE_PATHS.closedLeft : EYE_PATHS.openLeft,
     }, '-=1200')
@@ -58,7 +59,7 @@ export default function AnimatedThemeSwitch() {
     .add('.mouth',{
       d: !isDark ? MOUTH_PATHS.closed : MOUTH_PATHS.open ,
     }, '-=1210');
-    return () => t1.revert()
+    return () => tl.remove()
   };
   const bgClassName = clsx(
     'switchBG',
@@ -75,12 +76,23 @@ export default function AnimatedThemeSwitch() {
     'bg-[rgb(243,255,148)]' ,
     'dark:bg-[rgb(110,240,225)]' ,
     'flex items-center justify-center cursor-pointer',
+    'dark:translate-x-[40px] transition-transform duration-[1050ms]',
+  );
+  const pulseClassName = clsx(
+    'face',
+    'absolute left-0 top-0 h-8 w-8 rounded-full',
+    'bg-gray-200',
+    'dark:bg-gray-600',
     'dark:translate-x-[40px]',
+    'animate-pulse'
   );
   return (
     <div
       className= {bgClassName}
     >
+      {!mounted ? (
+      <div className={pulseClassName} />
+    ) : (
       <div
         className={faceClassName}
         onClick={handleThemeToggle}
@@ -109,6 +121,7 @@ export default function AnimatedThemeSwitch() {
           />
         </svg>
       </div>
+    )}
     </div>
   )
 }

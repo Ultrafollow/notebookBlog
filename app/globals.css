@@ -2,6 +2,22 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+  :root {
+    --transition-duration: 1000ms;
+    --transition-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  html {
+    @apply transition-colors;
+    transition-duration: var(--transition-duration);
+    transition-timing-function: var(--transition-easing);
+  }
+  
+  body {
+    @apply transition-colors duration-[var(--transition-duration)] ease-[var(--transition-easing)];
+  }
+}
 /* 主容器 - Flex布局 */
 html {
     scroll-padding-top: 6rem;
