@@ -9,6 +9,7 @@ import { HEADER_NAV_LINKS } from '@/data/navigation'
 import { SITE_METADATA } from '@/data/site-metadata'
 import { Logo } from './Logo'
 import { ThemeSwitcher } from './Theme-switcher'
+import AnimatedThemeSwitch from './Switch'
 import DocSearch from '@/components/Search/DocSearch'
 
 export function Header() {
@@ -25,7 +26,7 @@ export function Header() {
     >
       <div className="flex items-center justify-between gap-2">
             <Logo />
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-4 max-h-5">
           <div className="hidden gap-1.5 sm:flex">
             <DocSearch />
             {HEADER_NAV_LINKS.map(({ title, href }) => {
@@ -47,7 +48,7 @@ export function Header() {
             className="hidden h-4 w-px shrink-0 bg-gray-200 dark:bg-gray-600 md:block"
           />
           <div className="flex items-center gap-2">
-            <ThemeSwitcher />
+            <AnimatedThemeSwitch />
           </div>
         </div>
       </div>
