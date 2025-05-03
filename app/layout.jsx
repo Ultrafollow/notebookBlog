@@ -45,7 +45,7 @@ export default function RootLayout({ children }) {
       <head>
         <meta name="baidu-site-verification" content="codeva-MMXplx3EG1" />
         <meta name="msvalidate.01" content="E6102F9220389FDC31EFF5A009FDE6A5" />
-        <meta name="theme-color" media="(prefers-color-scheme: light)" content="#fff" />
+        <meta name="theme-color" media="(prefers-color-scheme: light)" content="#FFE4E1" />
         <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#000" />
         <link
           rel="stylesheet"
