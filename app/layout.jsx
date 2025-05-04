@@ -30,7 +30,7 @@ const englishFont = Nunito({
   variable: '--font-en-body',
 })
 
-export default function RootLayout({ children }) {
+export default async function RootLayout({ children }) {
   return (
     <html 
     lang="en"

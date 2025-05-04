@@ -5,6 +5,7 @@ export async function generateMetadata({ params }) {
   }
 }
 export default async function HomePage() {
+  await new Promise(resolve => setTimeout(resolve, 1000))
   return (
     <div>
       <Home/>
