@@ -59,7 +59,7 @@ export default async function RootLayout({ children }) {
           'antialiased',
           'relative min-h-screen pl-[calc(100vw-100%)]',
           'flex flex-col',
-          'bg-white text-neutral-900',
+          'bg-[#F5F5F5] text-neutral-900',
           'dark:bg-dark dark:text-gray-100',
         ])}
       >

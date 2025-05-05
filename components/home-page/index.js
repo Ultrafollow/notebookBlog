@@ -18,25 +18,26 @@ export function Home () {
                     </div>
                     <div className="mt-8 grid grid-cols-1 gap-8 xl:grid-cols-3">
                         {/* 左侧内容 */}
-                        <div className="col-span-2 space-y-6">
-                            <div className="text-base leading-7 text-gray-600 dark:text-gray-400 md:text-lg md:leading-8">
-                            <Intro />
-                            <TypedBios />
-                            <div className="mb-6 pt-6 md:mb-8">
-                                <p>I started learning to code when I was a senior in college.</p>
-                                <p>Python has brought a lot of convenience to my subject learning.</p>
-                                <p>I have a passion for Py / js and web dev.</p>
-                                <p>I set up this blog because I want to record what I've learned, and I can easily review it.</p>
-                            </div>
-                                <BlogLinks />
-                            <p className="my-6 flex md:my-8">
-                                <span className="mr-2">Happy reading</span>
-                                <Twemoji emoji="clinking-beer-mugs" />
-                            </p>
+                        <div className="col-span-2">
+                            <div className="space-y-4 text-base leading-8 text-gray-600 dark:text-gray-400 md:text-lg md:leading-8">
+                                <Intro />
+                                <TypedBios />
+                                <div className="mb-6 pt-6 md:mb-8 space-y-4">
+                                    <p>I started learning to code when I was a senior in college.</p>
+                                    <p>Python has brought a lot of convenience to my subject learning.</p>
+                                    <p>I have a passion for Py / js and web dev.</p>
+                                    <p>I create this blog because I wanna record what I've learned, and I can review it.</p>
+                                </div>
+                                <div className='pt-6'>
+                                    <BlogLinks />
+                                </div>
+                                <p className="pt-10 my-6 flex md:my-8">
+                                    <span className="mr-2">Happy reading</span>
+                                    <Twemoji emoji="clinking-beer-mugs" />
+                                </p>
                             </div>
                         </div>
                         {/* 右侧边栏 */}
-                        {/* <div className="hidden pl-4 xl:block"> */}
                         <div className='hidden pl-4 xl:block w-[360px] flex-shrink-0'>
                             <ProfileCard />
                         </div>

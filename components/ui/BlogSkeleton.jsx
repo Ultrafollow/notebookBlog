@@ -1,6 +1,6 @@
 import { Container } from "./Container"
 export const ListLayoutSkeleton = () => (
-    <Container className="py-8 animate-pulse">
+    <Container className="py-8 animate-pulse bg-[#F5F5F5] bg-dark">
       {/* 标题骨架 */}
       <div className="h-12 bg-gray-200 dark:bg-gray-700 rounded-xl w-1/3 mb-8" />
       
