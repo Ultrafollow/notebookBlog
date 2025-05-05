@@ -11,7 +11,7 @@ function Logo() {
         width={100}
         height={100}
         className="logo h-20 w-20 rounded-xl"
-        loading="eager"
+        priority
       />
     </div>
   )
