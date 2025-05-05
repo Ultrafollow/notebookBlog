@@ -55,9 +55,9 @@ export default function ListLayout({
 
   return (
     <Container className="py-8">
-      {isLoading ? (
+      {/* {isLoading ? (
         <ListLayoutSkeleton />
-      ) : (
+      ) : ( */}
       <div className="flex flex-col space-y-8">
         {/* 动态标题 */}
         <h1 className="font-extrabold tracking-tight text-4xl leading-[3rem] md:text-5xl md:leading-[4rem] flex flex-col md:flex-row gap-2">
@@ -198,7 +198,7 @@ export default function ListLayout({
           </div>
         )}
       </div>
-      )}
+      {/* )} */}
     </Container>
   )
 }

@@ -20,6 +20,7 @@ function Logo() {
 
 
 export default function Loading() {
+ 
   return (
     <div className="flex h-screen w-full flex-col items-center justify-center bg-white dark:bg-gray-900">
       <div className="mb-8 flex flex-1 items-end animate-bounce">
