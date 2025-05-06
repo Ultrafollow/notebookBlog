@@ -5,8 +5,10 @@ import { Link } from '@/components/ui/Link'
 import { SITE_METADATA } from '@/data/site-metadata'
 import { GrowingUnderline } from '@/components/ui/Growing-underline'
 import { createTimeline, animate, createScope, createSpring, createDraggable, svg} from 'animejs';
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { TITLE_PATH } from '@/components/ui/SvgPath'
+import {LogoTitle} from '@/components/Header/LogoTitle'
+
 
 export function Logo(className) {
   const root = useRef(null)
@@ -60,25 +62,9 @@ export function Logo(className) {
       <Link
         href="/"
         aria-label={SITE_METADATA.headerTitle}
+        className='overflow-hidden'
       >
-        <div className='h-10 w-40'>
-          <svg viewBox="300 17000 21000 1200" className={clsx('h-10 w-10', className)} style={{ 
-            transform: 'scale(4)',
-            transformOrigin: 'left top'
-          }}>
-            <g
-              fillRule="evenodd"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="50"
-            >
-              <path stroke="transparent" 
-              fill='transparent' 
-              className='line' 
-              d={TITLE_PATH} />
-            </g>
-          </svg>
-        </div>
+        <LogoTitle/>
       </Link>
       </GrowingUnderline>
     </div>

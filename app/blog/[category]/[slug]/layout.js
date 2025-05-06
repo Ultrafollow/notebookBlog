@@ -6,6 +6,7 @@ import 'github-markdown-css'
 import { useEffect } from 'react'
 import Discussion from '@/components/Comment/Discussion.jsx'
 import { useTheme } from 'next-themes' // 导入 useTheme 钩子
+import ScrollLinked from '@/components/ui/TopBar'
 
 export default function BlogLayout({ children }) {
   const { theme } = useTheme()
@@ -76,7 +77,10 @@ export default function BlogLayout({ children }) {
   return (
     <>
       <div className='markdown-root'>
-        <div className='markdown-body'>{children}</div>
+        <div className='markdown-body'>
+          <ScrollLinked/>
+          {children}
+        </div>
       </div>
       <div className='container mx-auto py-12 px-40'>
         <Discussion theme={theme}/>

@@ -306,3 +306,36 @@ html {
 .dark .katex-display .mtable > .col-align-c > .vlist-t > .vlist-r > .vlist {
   color: inherit !important;
 }
+
+@layer components {
+  .particle-fire {
+    @apply opacity-0 rounded-[40px] border-t-0;
+    transform: rotate(-45deg);
+  }
+  
+  .animate-fire {
+    animation: fires 0.8s linear infinite;
+  }
+ 
+  .particle-fire::before {
+    @apply absolute w-1/2 h-1/2 rounded-[40px] border-t-0;
+    content: '';
+    top: 60%;
+    left: 40%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(251, 140, 0, 0.6);
+  }
+
+  /* 暗色主题样式 */
+  .dark .particle-fire::before {
+    background-color: rgba(29, 78, 216, 0.6);
+  }
+ 
+  @keyframes fires {
+    0% { transform: rotate(-70deg) translateY(0%); }
+    25% { transform: rotate(-20deg) translateY(-5%); opacity: 1; }
+    50% { transform: rotate(-70deg) translateY(-10%); }
+    75% { transform: rotate(-20deg) translateY(-20%); }
+    100% { transform: rotate(-70deg) translateY(-40%); opacity: 1; }
+  }
+}
