@@ -25,8 +25,67 @@ summary: '使用Cubit建模的简单概念和方法'
 
 ## 1.2 脚本语言类型
 
+`Cubit`支持两种脚本语言：`Jou`和`Python`。其中，`Jou`是`Cubit`的原生脚本语言。而`Python`则是更为通用的编程语言。我个人一般喜欢使用`Python`，因为它能够自由编写数据处理的代码，可以简单引入例如`numpy`、`pandas`等库。
+
+这两种语言的语法其实并没有什么差异，只是在jou的指令上加入`cubit.cmd("jou grammar")`。其中，
+
+需要注意的是，Cubit是使用它自带的python解释器，而不是系统的python解释器。所以运行python脚本需要在`gui 5`中选择python解释器。如果你想要安装其他的python库，可以在`cubit`的安装目录下找到python解释器，然后使用以下命令安装库：
+
+```bash:cmd
+C:\Python39\python.exe -m pip install 库名
+```
+
+将`C:\Python39\python.exe`改成你安装的Cubit目录下的python解释器路径。你也可以自行创建一个虚拟环境，指定python解释器的路径，或者将该解释器路径加入到系统环境变量中。但这些方法我认为都太麻烦了。我个人是直接指定解释器路径安装第三方库。
+
 # 2 Cubit基本概念
+
+![基本概念](https://imgur.com/gSHRVvo.png)
+
+如上图所示，Cubit中，`Entity`是 :
+
+> The base class of all the geometry and mesh types.
+
+也就是说，Cubit中的所有几何体和网格类型都属于`Entity`类。其中，`GeomEntity`又可以分为以下五类：
+- `Vertex`：点，表示几何体的顶点；
+- `Curve`：线，表示几何体的线；
+- `Surface`：面，表示几何体的面；
+- `Volume`：体，表示几何体的体；
+- `body`：网格，表示几何体的体；
+
+其中，`body`和`volume`之间的区别我不是很清楚，或许`body`可以含有多个`volume`吧。
+
+通常我们在建模时，首先创建`Vertex`，然后点连成`Curve`，线拓展成`Surface`，面组成`Volume`。所以，一个模型的精度和计算复杂度主要取决于`Vertex`的数量和后续网格划分的大小。
 
 # 3 Cubit常用命令
 
+1. 直接在指令栏中使用：
+- `reset`：重置当前模型，清空所有元素；
+- `list vertex [id]`：列出当前指定id的`Vertex`信息；
+- `list curve [id]`：列出当前指定id的`Curve`信息；
+- `list surface [id]`：列出当前指定id的`Surface`信息
+
+2. 在脚本中使用：
+```py:jou.py
+# 创建点
+cubit.create_vertex(x, y, z)
+
+# 创建线
+
+# 建议只使用spline创建线，spline创建的线不会打乱vertex的id。但是如果使用spline创建多段线，会自动创建曲线，因此想要创建多段直线，建议一条一条用spline创建。
+
+## spine
+## 两点
+cubit.cmd(f"create curve spline vertex {point1.id()} {point2.id()}")
+## 多点
+cubit.cmd(f"create curve spline vertex {point1.id()} to {point4.id()}")
+
+## polyline 多段直线
+cubit.cmd(f"create curve polyline vertex {point1.id()} to {point4.id()}")
+
+
+
+```
+
 # 4 Cubit建模中的注意事项
+
+# 5 总结建模步骤
