@@ -7,6 +7,5 @@ export default function robots() {
       allow: '/',
     },
     sitemap: `${SITE_METADATA.siteUrl}/sitemap.xml`,
-    host: 'www.followxu.top',
   }
 }
