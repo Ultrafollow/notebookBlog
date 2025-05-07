@@ -65,13 +65,14 @@ C:\Python39\python.exe -m pip install 库名
 - `list surface [id]`：列出当前指定id的`Surface`信息
 
 2. 在脚本中使用：
-```py:jou.py
+```py:jou_2D.py
 # 创建点
 cubit.create_vertex(x, y, z)
 
 # 创建线
-
-# 建议只使用spline创建线，spline创建的线不会打乱vertex的id。但是如果使用spline创建多段线，会自动创建曲线，因此想要创建多段直线，建议一条一条用spline创建。
+# 建议只使用spline创建线，spline创建的线不会打乱vertex的id。
+# 但是如果使用spline创建多段线，会自动创建曲线。
+# 因此想要创建多段直线，建议一条一条用spline创建。
 
 ## spine
 ## 两点
@@ -82,10 +83,53 @@ cubit.cmd(f"create curve spline vertex {point1.id()} to {point4.id()}")
 ## polyline 多段直线
 cubit.cmd(f"create curve polyline vertex {point1.id()} to {point4.id()}")
 
+# 分割线
+# 将一条线分割成两段线，需要两条线相交。
+cubit.cmd("split curve A crossing curve B")
 
+
+# 创建面
+# 需要 curve 1 2 3 4 组成一个闭合的面。
+cubit.cmd("create surface curve 1 2 3 4")
+
+# 创建block
+cubit.cmd("block 1 surface 1 2")
+cubit.cmd("block 1 name 'xxx'")
+
+# 创建nodesets
+# 想要创建group，再依据group创建nodeset，依据需要可以选择是否删除node
+cubit.cmd("group 'groundsurf' add node in curve 1")
+cubit.cmd("group 'groundsurf' remove node in curve 2")
+cubit.cmd("nodeset 20 group groundsurf")
+cubit.cmd("nodeset 20 name 'groundsurf'")
 
 ```
 
 # 4 Cubit建模中的注意事项
 
+- `Pylith`中，材料指定的是Cubit中的`block`，边界和断层指定的是`nodeset`。
+
+- 创建边界条件`nodesets`时，需要注意`dof`，即自由度。如果两个边界点集有交点，又在两个边界同时限定该交点的同一个自由度，那么就会报错。所以在创建`nodeset`时，如果有自由度冲突，就`cubit.cmd("group 'groundsurf' remove node in curve 2")`,将冲突的节点删除,只保留一个边界有该点即可。
+
+- 三维建模中，创建断层面时，如果断层面是在块体内部的话，此时使用`imprint`命令没有效果。需要先使用`webcut`命令，将悬浮在块体内的断层面延伸切断整个块体。这样`imprint`才能生效。这其中还有一个细节，如果你的断层面是一个90°的垂直断层，那么你imprint的时候需要刻印的是`volume`，而断层如果是非垂直的，那么你需要刻印的是`surface`。如下：
+
+```py:jou_3D.py
+# 垂直断层
+cubit.cmd(f"webcut volume xxx_id with sheet extended from surface fault_id")
+cubit.cmd(f"imprint volume {xxx_ids} with curve {fault_curve_ids}")
+
+# 非垂直断层
+cubit.cmd(f"webcut volume xxx_id with sheet extended from surface xxx_fault_id")
+cubit.cmd(f"imprint surface xxx_fault.id with curve xxx_ids")
+```
+
 # 5 总结建模步骤
+
+1. 创建点
+2. 创建线
+3. 创建面
+4. 创建块体(3D)
+5. imprint、merge
+6. 网格化
+7. 创建blocks
+8. 创建nodesets
