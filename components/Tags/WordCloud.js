@@ -15,7 +15,6 @@ export default function WordCloud({ data }) {
       .words(data)
       .padding(5)
       .rotate(() => Math.random() * 90 - 45)
-      .font("Impact")
       .fontSize(d => d.size)
       .on("end", draw);
 
@@ -32,7 +31,6 @@ export default function WordCloud({ data }) {
         .data(words)
         .enter().append("text")
         .style("font-size", d => `${d.size}px`)
-        .style("font-family", "Impact")
         .style("fill", (_, i) => d3.schemeCategory10[i % 10]) // 简化颜色配置[^1]
         .attr("text-anchor", "middle")
         .attr("transform", d => `translate(${d.x},${d.y}) rotate(${d.rotate})`)
@@ -40,5 +38,5 @@ export default function WordCloud({ data }) {
     }
   }, [data]);
 
-  return <svg className='font-sans' ref={svgRef} width="100%" height="600" />;
+  return <svg ref={svgRef} width="100%" height="600" />;
 }

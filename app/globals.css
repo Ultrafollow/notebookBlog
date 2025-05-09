@@ -340,6 +340,6 @@ html {
   }
 }
 
-.svg .wordcloud {
-  font-family: 'Ma_Shan_Zheng';
+.svg .g .text {
+  font-family: var(--font-cn-body) !important;
 }
