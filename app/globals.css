@@ -339,3 +339,7 @@ html {
     100% { transform: rotate(-70deg) translateY(-40%); opacity: 1; }
   }
 }
+
+.svg .wordcloud {
+  font-family: 'Ma_Shan_Zheng';
+}
