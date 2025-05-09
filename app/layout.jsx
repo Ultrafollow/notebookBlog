@@ -53,6 +53,7 @@ export default async function RootLayout({ children }) {
           integrity="sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI+WdtXRGWt2kTvGFasHpSy3SV"
           crossOrigin="anonymous"
         />
+        <link rel="icon" href="/app/favicon.ico" />
       </head>
       <body
         className={clsx([
