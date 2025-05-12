@@ -7,7 +7,7 @@ const wordsList = [
     {text:"医疗服务", size:'26'},
     {text:"再生医学", size:'30'},
     {text:"生物科技", size:'26'},
-    {text:"医药", size:'34'},
+    {text:"医药", size:'40'},
     {text:"免疫治疗", size:'16'},
     {text:"体外诊断", size:'20'},
     {text:"医疗设备", size:'30'},
