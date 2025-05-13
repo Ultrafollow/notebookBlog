@@ -8,13 +8,15 @@ import { Link } from '@/components/ui/Link'
 import { HEADER_NAV_LINKS } from '@/data/navigation'
 import { SITE_METADATA } from '@/data/site-metadata'
 import { Logo } from './Logo'
-import { ThemeSwitcher } from './Theme-switcher'
 import AnimatedThemeSwitch from './Switch'
 import DocSearch from '@/components/Search/DocSearch'
+import { useHeader } from './HeaderContext'
 
 export function Header() {
   let pathname = usePathname()
-
+  const { visible } = useHeader()
+  if (!visible) return null
+  
   return (
     <Container
       as="header"

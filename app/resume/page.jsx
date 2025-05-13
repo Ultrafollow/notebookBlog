@@ -1,12 +1,14 @@
+'use client'
+import { useHeader } from '@/components/Header/HeaderContext'
+
 const resumeData = {
     basics: {
-      name: "张三",
-      title: "高级前端工程师",
-      avatar: "/avatar.jpg", // 需将图片放入public目录
+      name: "徐火龙",
+      title: "在校求职",
       email: "zhangsan@example.com",
       phone: "+86 138-1234-5678",
       location: "上海，中国",
-      website: "https://zhangsan.dev"
+      website: "https://www.followxu.top/"
     },
     education: [
       {
@@ -35,14 +37,21 @@ const resumeData = {
   }
   
   export default function Resume() {
+    const { visible, toggleHeader } = useHeader()
     return (
       <div className="max-w-4xl mx-auto my-8 bg-white rounded-2xl shadow-xl overflow-hidden">
+        <button
+            onClick={toggleHeader}
+            className="fixed h-8 w-22 text-xs text-white top-8 right-20 z-50 bg-blue-600/80 backdrop-blur-sm px-4 py-2 rounded-full shadow-lg shadow-blue-500/50 hover:bg-blue-200 hover:text-black hover:scale-110 transition-colors duration-700"
+        >
+            {visible ? 'hidden Header' : 'display Header'}
+        </button>
         {/* 头部信息 */}
-        <div className="bg-gradient-to-r from-blue-600 to-indigo-700 p-8 text-white">
-          <div className="flex items-center gap-6">
+        <div className="bg-gradient-to-r from-blue-600 to-indigo-400 p-8 text-white">
+          <div className="flex items-center gap-8">
             <img 
-              src={resumeData.basics.avatar}
-              className="w-24 h-24 rounded-full border-4 border-white/20"
+              src='https://imgur.com/61z8oc7.png'
+              className="w-24 h-24 rounded-full border-4 border-blue-200 object-cover object-center"
               alt="头像"
             />
             <div>

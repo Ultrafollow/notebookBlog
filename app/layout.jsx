@@ -6,6 +6,7 @@ import { TiltedGridBackground } from '@/components/ui/Title-grid-background.js'
 import { ThemeProviders } from './theme-providers'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
+import { HeaderProvider} from '@/components/Header/HeaderContext'
 
 const FONT_PLAYPEN_SANS = Titan_One({
   subsets: ['latin'],
@@ -65,13 +66,15 @@ export default async function RootLayout({ children }) {
         ])}
       >
         <TiltedGridBackground className="inset-x-0 top-0 z-[-1] h-[50vh]" />
-        <ThemeProviders>
-          <Header/>
-          <main className="mb-auto grow">
-            {children}
-          </main>
-          <Footer/>
-        </ThemeProviders>
+        <HeaderProvider>
+          <ThemeProviders>
+            <Header/>
+            <main className="mb-auto grow">
+              {children}
+            </main>
+            <Footer/>
+          </ThemeProviders>
+        </HeaderProvider>
       </body>
     </html>
   )
