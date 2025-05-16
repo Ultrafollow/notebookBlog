@@ -5,6 +5,7 @@ import css from 'refractor/lang/css'
 import bash from 'refractor/lang/bash'
 import json from 'refractor/lang/json'
 import sql from 'refractor/lang/sql'
+import markdown from 'refractor/lang/markdown.js'
 
 export function registerPrismLanguages() {
   // 注册所有需要的语言
@@ -14,4 +15,5 @@ export function registerPrismLanguages() {
     refractor.register(bash)
     refractor.register(json)
     refractor.register(sql)
+    refractor.register(markdown)
 }

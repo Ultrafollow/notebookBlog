@@ -191,6 +191,11 @@ export default async function PostPage({ params }) {
             {decodeURIComponent(category)}
           </span>
           <span className='h-1 w-1 rounded-full bg-current' aria-hidden />
+          <Twemoji emoji='writing-hand' />
+          <span className='px-2 py-1 rounded-md bg-gray-100 dark:bg-purple-200 dark:text-gray-600'>
+            {frontmatter.author || 'followxu'}
+          </span>
+          <span className='h-1 w-1 rounded-full bg-current' aria-hidden />
           <Twemoji emoji='hourglass-not-done' />
           <span className='px-2 py-1 rounded-md bg-gray-100 dark:bg-purple-200 dark:text-gray-600'>
             {frontmatter.readingTime}
