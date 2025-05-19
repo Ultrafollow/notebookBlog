@@ -8,7 +8,7 @@ loader.config({
   paths: { vs: "https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.33.0/min/vs/" } 
 });
 
-function MonacoEditor({ value, getValue }) {
+function MonacoEditor({ value, getValue, theme }) {
   // 存储编辑器实例的 ref
   const editorRef = useRef(null);
   // 存储事件监听的 dispose 函数（用于清理）
@@ -41,9 +41,9 @@ function MonacoEditor({ value, getValue }) {
   return (
     <Editor
       // 移除 onChange 回调（改用 ref 监听原生事件）
-      height="50vh"
-      width="40vw"
-      theme="light"
+      height="80vh"
+      width="45vw"
+      theme={theme}
       language="markdown"
       onMount={handleEditorMount} // 挂载时绑定实例和事件
       options={{
