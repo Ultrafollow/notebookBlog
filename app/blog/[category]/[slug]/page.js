@@ -74,7 +74,7 @@ export async function getPost(params) {
       }
     }
     const { text: readingTimeText, minutes } = readingTime(mdxSource);
-    // console.log(mdxSource)
+    console.log(mdxSource)
     const { code } = await bundleMDX({
       source: mdxSource,
       cwd:path.join(process.cwd(), 'app', 'components', 'Plugins'),
