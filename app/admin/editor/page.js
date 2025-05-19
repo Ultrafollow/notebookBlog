@@ -4,7 +4,7 @@
 import '@/app/globals.css';
 import '@/app/prism-dracula.css';
 import 'github-markdown-css';
-import { createClient } from '@/utils/supabase/client';
+// import { createClient } from '@/utils/supabase/client';
 import { useState, useEffect, useCallback } from 'react';
 import { getMDXComponent } from 'mdx-bundler/client';
 import { TreeWrapper } from '@/components/Plugins/Antd';
@@ -12,7 +12,7 @@ import { Container } from '@/components/ui/Container';
 import Editor from '@/components/Notes/Editor'; // 引入修改后的 Editor 组件
 
 export default function NotePage() {
-  const supabase = createClient();
+  // const supabase = createClient();
   const [error, setError] = useState(null);
   const [compiledCode, setCompiledCode] = useState(null);
   const [compileError, setCompileError] = useState(null);
@@ -57,7 +57,7 @@ export default function NotePage() {
 
   if (error) return <div>Error: {error}</div>;
 
-  const MDXComponent = getMDXComponent(compiledCode);
+  const MDXComponent = compiledCode ? getMDXComponent(compiledCode) : null;
   console.log('当前编辑器内容:', editorContent);
 
   return (
@@ -71,9 +71,15 @@ export default function NotePage() {
       </div>
       <div className='markdown-root'>
         <div className='markdown-body'>
-          <Container className='mb-[200px] max-w-[60%] py-8'>
-            <MDXComponent components={{ TreeWrapper }} />
-          </Container>
+          {MDXComponent ? (
+            <Container className='mb-[200px] max-w-[60%] py-8'>
+              <MDXComponent components={{ TreeWrapper }} />
+            </Container>
+          ) : (
+            <div className="text-center p-4 text-gray-500">
+              {isCompiling ? '编译中...' : '输入内容以预览'}
+            </div>
+          )}
         </div>
       </div>
     </div>
