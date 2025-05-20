@@ -16,14 +16,12 @@ export default function NotePage() {
   const [compiledCode, setCompiledCode] = useState(null);
   const [compileError, setCompileError] = useState(null);
   const [isCompiling, setIsCompiling] = useState(false);
-  const [editorContent, setEditorContent] = useState('# 开始编辑');
+  const [editorContent, setEditorContent] = useState('');
   const [abortController, setAbortController] = useState(null); // 新增：存储AbortController实例
 
   const stableUpdateContent = useCallback((content) => {
-    if (content !== editorContent) {
       setEditorContent(content);
-    }
-  }, [editorContent]);
+  }, []);
 
   useEffect(() => {
     const compileMDX = async () => {
@@ -80,7 +78,6 @@ export default function NotePage() {
         {/* 左侧编辑器区域（保持不变） */}
         <div className="w-1/2 p-6 border-r border-gray-100">
           <Editor
-            value={editorContent} 
             getValue={stableUpdateContent}
             theme={resolvedTheme === 'dark' ? 'vs-dark' : 'light'}
             style={{
