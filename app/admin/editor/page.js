@@ -84,7 +84,7 @@ export default function NotePage() {
     }
   };
  
-  const timeout = setTimeout(compileMDX, 1000); // 防抖 1 秒
+  const timeout = setTimeout(compileMDX, 800);
  
   return () => {
     clearTimeout(timeout); // 清理定时器
