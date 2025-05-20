@@ -9,6 +9,7 @@ import { getMDXComponent } from 'mdx-bundler/client';
 import { TreeWrapper } from '@/components/Plugins/Antd';
 import { Container } from '@/components/ui/Container';
 import Editor from '@/components/Notes/Editor'; 
+import { createClient } from '@/utils/supabase/client'; // 导入 Supabase 客户端
 
 export default function NotePage() {
   const { resolvedTheme } = useTheme(); 
@@ -17,45 +18,68 @@ export default function NotePage() {
   const [compileError, setCompileError] = useState(null);
   const [isCompiling, setIsCompiling] = useState(false);
   const [editorContent, setEditorContent] = useState('');
-  const [abortController, setAbortController] = useState(null); // 新增：存储AbortController实例
+  const [abortController, setAbortController] = useState(null);
+  // 新增：保存相关状态
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveSuccess, setSaveSuccess] = useState(false);
+  const supabase = createClient(); // 初始化 Supabase 客户端
 
   const stableUpdateContent = useCallback((content) => {
-      setEditorContent(content);
+    setEditorContent(content);
+    setSaveSuccess(false); // 内容变化时重置保存成功状态
   }, []);
 
+  // 新增：保存到 Supabase 的函数
+  const handleSave = useCallback(async () => {
+    if (!editorContent.trim()) { // 内容为空时提示
+      setError('内容不能为空');
+      return;
+    }
+
+    setIsSaving(true);
+    setError(null);
+    try {
+      // 插入或更新逻辑（这里假设每次保存都新增记录，可根据需求改为更新）
+      const { data, error: supabaseError } = await supabase
+        .from('mdx_documents')
+        .insert({ content: editorContent }) // 插入新记录
+        .select(); // 返回插入的数据
+
+      if (supabaseError) throw new Error(supabaseError.message);
+      setSaveSuccess(true); // 保存成功提示
+    } catch (err) {
+      setError(`保存失败：${err.message}`);
+    } finally {
+      setIsSaving(false);
+    }
+  }, [editorContent, supabase]);
+
+  // 原有编译逻辑（保持不变）
   useEffect(() => {
     const compileMDX = async () => {
-      // 取消之前未完成的请求（如果有）
       if (abortController) abortController.abort();
-      
       const newAbortController = new AbortController();
       setAbortController(newAbortController);
 
       try {
         if (!editorContent) return;
-        
         setIsCompiling(true);
         const response = await fetch('/api/mdx/compile', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ mdxContent: editorContent }),
-          signal: newAbortController.signal, // 关联取消信号
+          signal: newAbortController.signal,
         });
 
-        // 检查请求是否被取消（避免处理已取消的响应）
         if (response.ok) {
           const { code, error: compileError } = await response.json();
           setCompiledCode(code);
           setCompileError(compileError);
         }
       } catch (err) {
-        // 忽略因取消导致的错误（AbortError）
-        if (err.name !== 'AbortError') {
-          setError(err.message);
-        }
+        if (err.name !== 'AbortError') setError(err.message);
       } finally {
         setIsCompiling(false);
-        // 清除已完成的控制器
         setAbortController(null);
       }
     };
@@ -63,10 +87,9 @@ export default function NotePage() {
     const timeout = setTimeout(compileMDX, 300);
     return () => {
       clearTimeout(timeout);
-      // 组件卸载时取消未完成的请求
       if (abortController) abortController.abort();
     };
-  }, [editorContent, abortController]); // 依赖abortController确保取消逻辑更新
+  }, [editorContent, abortController]);
 
   if (error) return <div className="p-4 text-red-600">错误：{error}</div>;
 
@@ -74,8 +97,22 @@ export default function NotePage() {
 
   return (
     <div className="mt-8 min-h-screen rounded-2xl bg-gray-50 p-4 dark:bg-gray-700">
+      {/* 新增：保存按钮区域 */}
+      <div className="mb-4 flex items-center gap-2">
+        <button
+          onClick={handleSave}
+          disabled={isSaving || !editorContent.trim()}
+          className="px-4 py-2 rounded-lg bg-blue-500 text-white disabled:bg-blue-300 transition-colors"
+        >
+          {isSaving ? '保存中...' : '保存笔记'}
+        </button>
+        {saveSuccess && (
+          <span className="text-green-500">保存成功 ✔️</span>
+        )}
+      </div>
+
       <div className="flex rounded-2xl shadow-md bg-white overflow-hidden dark:bg-[#1f1f1f] dark:shadow-lg dark:shadow-cyan-500/50">
-        {/* 左侧编辑器区域（保持不变） */}
+        {/* 左侧编辑器区域 */}
         <div className="w-1/2 p-6 border-r border-gray-100">
           <Editor
             getValue={stableUpdateContent}
@@ -90,7 +127,8 @@ export default function NotePage() {
             }}
           />
         </div>
- 
+
+        {/* 右侧预览区域（保持不变） */}
         <div className="w-1/2 p-2">
           <div 
             className="markdown-root"
