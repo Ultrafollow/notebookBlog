@@ -197,6 +197,12 @@ html {
       @apply pl-6;
     }
 
+    ol {
+      @apply list-decimal;
+      list-style-position: inside;
+      padding-left: 1.5rem;
+    }
+
     ol li {
       @apply text-gray-700 dark:text-gray-300;
     }
