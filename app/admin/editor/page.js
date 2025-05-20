@@ -75,8 +75,9 @@ export default function NotePage() {
   const MDXComponent = compiledCode ? getMDXComponent(compiledCode) : null;
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4">
-      <div className="flex rounded-2xl shadow-md bg-white overflow-hidden">
+    <div className="mt-8 min-h-screen rounded-2xl bg-gray-50 p-4 dark:bg-gray-700">
+      <div className="flex rounded-2xl shadow-md bg-white overflow-hidden dark:bg-[#1f1f1f] dark:shadow-lg dark:shadow-cyan-500/50">
+        {/* 左侧编辑器区域（保持不变） */}
         <div className="w-1/2 p-6 border-r border-gray-100">
           <Editor
             value={editorContent} 
