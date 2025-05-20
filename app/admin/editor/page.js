@@ -18,7 +18,6 @@ export default function NotePage() {
   const [compileError, setCompileError] = useState(null);
   const [isCompiling, setIsCompiling] = useState(false);
   const [editorContent, setEditorContent] = useState('');
-  const [abortController, setAbortController] = useState(null);
   // 新增：保存相关状态
   const [isSaving, setIsSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
@@ -54,42 +53,45 @@ export default function NotePage() {
     }
   }, [editorContent, supabase]);
 
-  // 原有编译逻辑（保持不变）
   useEffect(() => {
-    const compileMDX = async () => {
-      if (abortController) abortController.abort();
-      const newAbortController = new AbortController();
-      setAbortController(newAbortController);
-
-      try {
-        if (!editorContent) return;
-        setIsCompiling(true);
-        const response = await fetch('/api/mdx/compile', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ mdxContent: editorContent }),
-          signal: newAbortController.signal,
-        });
-
-        if (response.ok) {
-          const { code, error: compileError } = await response.json();
-          setCompiledCode(code);
-          setCompileError(compileError);
-        }
-      } catch (err) {
-        if (err.name !== 'AbortError') setError(err.message);
-      } finally {
-        setIsCompiling(false);
-        setAbortController(null);
+  const abortController = new AbortController(); // 内部生成，不通过 state 管理
+  let isMounted = true; // 防止组件卸载后更新状态
+ 
+  const compileMDX = async () => {
+    try {
+      if (!editorContent) return; // 无内容时不请求
+      setIsCompiling(true);
+      const response = await fetch('/api/mdx/compile', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mdxContent: editorContent }),
+        signal: abortController.signal, // 使用内部生成的 abortController
+      });
+ 
+      if (isMounted && response.ok) { // 组件未卸载时更新状态
+        const { code, error: compileError } = await response.json();
+        setCompiledCode(code);
+        setCompileError(compileError);
       }
-    };
-
-    const timeout = setTimeout(compileMDX, 1000);
-    return () => {
-      clearTimeout(timeout);
-      if (abortController) abortController.abort();
-    };
-  }, [editorContent, abortController]);
+    } catch (err) {
+      if (isMounted && err.name !== 'AbortError') {
+        setError(err.message);
+      }
+    } finally {
+      if (isMounted) {
+        setIsCompiling(false);
+      }
+    }
+  };
+ 
+  const timeout = setTimeout(compileMDX, 1000); // 防抖 1 秒
+ 
+  return () => {
+    clearTimeout(timeout); // 清理定时器
+    abortController.abort(); // 取消未完成的请求
+    isMounted = false; // 组件卸载时标记
+  };
+}, [editorContent]); // 仅依赖 editorContent（内容变化时触发）
 
   if (error) return <div className="p-4 text-red-600">错误：{error}</div>;
 
