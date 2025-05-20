@@ -31,7 +31,7 @@ const englishFont = Nunito({
   variable: '--font-en-body',
 })
 
-export default async function RootLayout({ children }) {
+export default function RootLayout({ children }) {
   return (
     <html 
     lang="en"
@@ -65,16 +65,16 @@ export default async function RootLayout({ children }) {
           'dark:bg-dark dark:text-gray-100',
         ])}
       >
-        <TiltedGridBackground className="inset-x-0 top-0 z-[-1] h-[50vh]" />
-        <HeaderProvider>
-          <ThemeProviders>
-            <Header/>
-            <main className="mb-auto grow">
-              {children}
-            </main>
-            <Footer/>
-          </ThemeProviders>
-        </HeaderProvider>
+          <TiltedGridBackground className="inset-x-0 top-0 z-[-1] h-[50vh]" />
+          <HeaderProvider>
+            <ThemeProviders>
+              <Header/>
+              <main className="mb-auto grow">
+                {children}
+              </main>
+              <Footer/>
+            </ThemeProviders>
+          </HeaderProvider>
       </body>
     </html>
   )

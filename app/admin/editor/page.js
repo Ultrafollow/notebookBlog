@@ -84,7 +84,7 @@ export default function NotePage() {
       }
     };
 
-    const timeout = setTimeout(compileMDX, 300);
+    const timeout = setTimeout(compileMDX, 1000);
     return () => {
       clearTimeout(timeout);
       if (abortController) abortController.abort();
