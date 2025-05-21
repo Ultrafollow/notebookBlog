@@ -3,9 +3,10 @@ import WebAuth from './GitAuth';
 
 export default function HeaderComponent() {
     return (
-        <>
-        <Header/>
-        <WebAuth />
-        </>
+        <div className='relative flex-auto items-center justify-center'>
+            <Header>
+                <WebAuth />
+            </Header>
+        </div>
     )
 }

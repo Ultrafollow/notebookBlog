@@ -11,7 +11,7 @@ import AnimatedThemeSwitch from './Switch';
 import DocSearch from '@/components/Search/DocSearch';
 import { useHeader } from './HeaderContext';
 
-export function Header() {
+export function Header( { children }) {
   const pathname = usePathname();
   const { visible } = useHeader();
   if (!visible) return null;
@@ -48,7 +48,8 @@ export function Header() {
             role="separator"
             className="hidden h-4 w-px shrink-0 bg-gray-200 dark:bg-gray-600 md:block"
           />
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-4">
+            {children}
             <AnimatedThemeSwitch />
           </div>
         </div>
