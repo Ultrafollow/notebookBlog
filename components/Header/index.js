@@ -1,3 +1,11 @@
 import {Header} from './Header';
+import WebAuth from './GitAuth';
 
-export default Header;
+export default function HeaderComponent() {
+    return (
+        <>
+        <Header/>
+        <WebAuth />
+        </>
+    )
+}
