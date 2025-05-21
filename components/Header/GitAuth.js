@@ -5,6 +5,8 @@ import {
   Mail, 
   MapPin 
 } from 'lucide-react' // 引入图标库
+import DownList from "./DownList"
+
 
 function SignIn({ provider, ...props }) {
   return (
@@ -41,6 +43,19 @@ function SignOut(props) {
     </form>
   )
 }
+function Avatar({session}) {
+  return (
+  <div
+    className="w-10 h-10 flex items-center justify-center bg-white dark:bg-gray-600 rounded-full hover:bg-gray-200 hover:scale-[1.05] transition-transform cursor-pointer"
+  >
+      <img 
+        src={session?.user?.image}
+        className="w-10 h-10 rounded-full border-4 border-blue-200 object-cover object-center"
+        alt="avatar"
+      />
+  </div>
+  );
+}
 
 export default async function WebAuth() {
   const session = await auth()
@@ -49,9 +64,9 @@ export default async function WebAuth() {
     <header className="flex justify-start items-center gap-4 rounded-full dark:bg-gray-800 shadow-sm">
       {session?.user ? (
         <span className="flex items-center gap-4">
-          <span className="text-lg font-semibold text-gray-800 dark:text-gray-200">
+          {/* <span className="text-lg font-semibold text-gray-800 dark:text-gray-200">
             {session?.user.name}
-          </span>
+          </span> */}
           <SignOut />
         </span>
       ) : (
