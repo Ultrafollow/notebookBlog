@@ -10,8 +10,10 @@ import { TreeWrapper } from '@/components/Plugins/Antd';
 import { Container } from '@/components/ui/Container';
 import Editor from '@/components/Notes/Editor'; 
 import { createClient } from '@/utils/supabase/client'; // 导入 Supabase 客户端
+import { useSession } from "next-auth/react"
 
 export default function NotePage() {
+  const { data: session } = useSession()
   const { resolvedTheme } = useTheme(); 
   const [error, setError] = useState(null);
   const [compiledCode, setCompiledCode] = useState(null);
@@ -41,7 +43,7 @@ export default function NotePage() {
       // 插入或更新逻辑（这里假设每次保存都新增记录，可根据需求改为更新）
       const { data, error: supabaseError } = await supabase
         .from('mdx_documents')
-        .insert({ content: editorContent }) // 插入新记录
+        .insert({ content: editorContent, user_id: session.user.id }) // 插入新记录
         .select(); // 返回插入的数据
 
       if (supabaseError) throw new Error(supabaseError.message);
