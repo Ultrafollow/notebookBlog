@@ -1,6 +1,7 @@
 import { signIn, signOut, auth } from "auth"
 import { 
     Github,
+    Folders,
     CircleUser,
     LogOut,
     Mail,
@@ -56,17 +57,24 @@ export default async function WebAuth() {
           border border-gray-100 dark:border-gray-600
         ">
           {/* 用户名称 */}
-          <div className="text-sm font-semibold text-gray-900 dark:text-white">
-            <CircleUser className="inline-block mr-1" size={16} strokeWidth={2}/>
-            {session.user.name}
-          </div>
+            <div className="text-sm font-semibold text-gray-900 dark:text-white">
+                <CircleUser className="inline-block mr-1" size={16} strokeWidth={2}/>
+                {session.user.name}
+            </div>
           
           {/* 用户邮箱 */}
-          <div className="mt-1 text-xs text-gray-500 dark:text-gray-300">
-            <Mail className="inline-block mr-1" size={16} strokeWidth={2}/>
-            {session.user.email}
-          </div>
- 
+            <div className="mt-1 text-xs text-gray-500 dark:text-gray-300">
+                <Mail className="inline-block mr-1" size={16} strokeWidth={2}/>
+                {session.user.email}
+            </div>
+
+            <div className="mt-1">
+                <Folders className="inline-block mr-1" size={16} strokeWidth={2}/>
+                <a href={`/admin/editor/${session.user.id}`} className="hover:underline text-sm font-semibold text-gray-900 dark:text-white">
+                    {session.user.name} 的笔记
+                </a>
+            </div>
+
           {/* 退出按钮 */}
           <form
             action={async () => {

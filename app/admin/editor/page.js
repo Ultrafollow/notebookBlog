@@ -11,9 +11,12 @@ import { Container } from '@/components/ui/Container';
 import Editor from '@/components/Notes/Editor'; 
 import { createClient } from '@/utils/supabase/client'; // 导入 Supabase 客户端
 import { useSession } from "next-auth/react"
+import { useRouter } from 'next/navigation';
+import { s } from 'hastscript';
 
 export default function NotePage() {
   const { data: session } = useSession()
+  const router = useRouter();
   const { resolvedTheme } = useTheme(); 
   const [error, setError] = useState(null);
   const [compiledCode, setCompiledCode] = useState(null);
@@ -54,6 +57,13 @@ export default function NotePage() {
       setIsSaving(false);
     }
   }, [editorContent, supabase]);
+  
+  if (saveSuccess) {
+    setTimeout(() => {
+      setSaveSuccess(false); // 3秒后重置保存成功状态
+      router.push(`/admin/editor/${session.user.id}`)
+    }, 800);
+  }
 
   useEffect(() => {
   const abortController = new AbortController(); // 内部生成，不通过 state 管理
