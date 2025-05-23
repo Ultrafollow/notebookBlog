@@ -6,10 +6,9 @@ export default async function userPage () {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from('mdx_documents')
-    .select('content, created_at')
+    .select('content, updated_at')
     .eq('user_id', session.user.id) // 根据用户 ID 查询数据
-    .order('created_at', { ascending: false })
-    console.log(session.user.id)
+    .order('updated_at', { ascending: false })
   if (error) {
     console.error('Error fetching data:', error);
     return null;
@@ -28,7 +27,7 @@ export default async function userPage () {
                 className="border p-3 rounded-lg"
             >
                 <div className="text-sm text-gray-500 mb-2">
-                创建时间：{new Date(doc.created_at).toLocaleString()}
+                修改时间：{new Date(doc.updated_at).toLocaleString()}
                 </div>
                 <div className="text-base">
                 {doc.content.length > 200 

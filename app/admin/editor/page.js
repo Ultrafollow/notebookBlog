@@ -12,7 +12,7 @@ import Editor from '@/components/Notes/Editor';
 import { createClient } from '@/utils/supabase/client'; // 导入 Supabase 客户端
 import { useSession } from "next-auth/react"
 import { useRouter } from 'next/navigation';
-import { s } from 'hastscript';
+import matter from 'gray-matter'
 
 export default function NotePage() {
   const { data: session } = useSession()
@@ -39,14 +39,28 @@ export default function NotePage() {
       setError('内容不能为空');
       return;
     }
-
+    const { data: metadata } = matter(editorContent);
+    const slug = metadata.title
+      .replace(/\s+/g, '-') // 空格转短横线
+      .replace(/[^\w\u4e00-\u9fa5-]+/g, '') // 保留单词字符、中文字符、短横线
+      .replace(/--+/g, '-') // 合并连续短横线
+      .replace(/^-+|-+$/g, ''); // 移除首尾短横线
+    const category = prompt('请输入笔记分类（例如：技术、生活）：');
+    if (category === null) { // 用户点击取消
+      setError('已取消保存');
+      return;
+    }
+    if (!category.trim()) { // 输入为空
+      setError('分类不能为空');
+      return;
+    }
     setIsSaving(true);
     setError(null);
     try {
       // 插入或更新逻辑（这里假设每次保存都新增记录，可根据需求改为更新）
       const { data, error: supabaseError } = await supabase
         .from('mdx_documents')
-        .insert({ content: editorContent, user_id: session.user.id }) // 插入新记录
+        .insert({ content: editorContent, user_id: session.user.id, category: category.trim(), title: slug }) // 插入新记录
         .select(); // 返回插入的数据
 
       if (supabaseError) throw new Error(supabaseError.message);

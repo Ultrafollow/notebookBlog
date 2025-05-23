@@ -10,7 +10,6 @@ import {
 
 export default async function WebAuth() {
   const session = await auth()
-  console.log(session)
  
   // 未登录状态
   if (!session?.user) {

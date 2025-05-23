@@ -11,9 +11,10 @@ export let metadata = genPageMetadata({ title: 'Blog' })
 const POSTS_PER_PAGE = 5
 
 export default async function BlogPage() {
+  const session_id = "fc96345b-fdc5-4b0c-9a07-51021c489234"; // 替换为实际的用户 ID
   // 获取所有分类数据
-  const categoriesData = await getCategoriesWithPosts()
- 
+  const categoriesData = await getCategoriesWithPosts({session_id})
+  console.log(categoriesData)
   // 处理文章数据
   const allPosts = categoriesData
   .flatMap(cat => 
@@ -29,7 +30,7 @@ export default async function BlogPage() {
     const dateB = new Date(b.date).getTime()
     return dateB - dateA  // 降序排列（最新在前）
   })
-  // console.log(allPosts)
+  console.log(allPosts)
   // 首页显示第一页内容
   const initialDisplayPosts = allPosts.slice(0, POSTS_PER_PAGE)
  

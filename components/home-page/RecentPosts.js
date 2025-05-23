@@ -4,7 +4,9 @@ import { GrowingUnderline } from '@/components/ui/Growing-underline'
 import { getCategoriesWithPosts } from '@/app/lib/utils'
 
 export async function RecentPosts({ limit = 3 }) {
-  const categoriesData = await getCategoriesWithPosts()
+  const session_id = "fc96345b-fdc5-4b0c-9a07-51021c489234"; // 替换为实际的用户 ID
+  // 获取所有分类数据
+  const categoriesData = await getCategoriesWithPosts({session_id})
   
   // 处理并排序文章数据
   const recentPosts = categoriesData

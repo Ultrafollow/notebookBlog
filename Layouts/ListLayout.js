@@ -8,7 +8,6 @@ import Pagination from '@/components/ui/Pagination'
 import Search from '@/components/Search/Search'
 import { formatDate } from '@/app/lib/client-utils'
 import { GrowingUnderline } from '@/components/ui/Growing-underline'
-import { ListLayoutSkeleton } from '@/components/ui/BlogSkeleton'
 
 export default function ListLayout({
   posts,          // 全部原始文章数据（始终基于完整数据集）
@@ -123,7 +122,7 @@ export default function ListLayout({
           ) : (
             displayPosts.map(post => (
               <article
-                key={post.path}
+                key={post.date}
                 className="group rounded-2xl p-6 transition-all 
                         hover:shadow-demure dark:hover:shadow-mondegreen
                         flex flex-col md:flex-row gap-6 md:gap-8

@@ -5,20 +5,12 @@ import { getCategoriesWithPosts } from '@/app/lib/utils'
 
 const POSTS_PER_PAGE = 5
 
-export async function generateStaticParams() {
-  const categoriesData = await getCategoriesWithPosts()
-  const allPosts = categoriesData.flatMap(cat => cat.posts)
-  const totalPages = Math.ceil(allPosts.length / POSTS_PER_PAGE)
-  
-  return Array.from({ length: totalPages }, (_, i) => ({
-    page: (i + 1).toString()
-  }))
-}
-
 export default async function BlogPage({ params }) {
   const { page } = await params
   const currentPage = Number(page) || 1
-  const categoriesData = await getCategoriesWithPosts()
+  const session_id = "fc96345b-fdc5-4b0c-9a07-51021c489234"; // 替换为实际的用户 ID
+  // 获取所有分类数据
+  const categoriesData = await getCategoriesWithPosts({session_id})
 
   // 处理文章路径
   const allPosts = categoriesData
