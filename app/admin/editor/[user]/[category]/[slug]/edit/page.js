@@ -8,7 +8,7 @@ import { useTheme } from 'next-themes';
 import { getMDXComponent } from 'mdx-bundler/client';
 import { TreeWrapper } from '@/components/Plugins/Antd';
 import { Container } from '@/components/ui/Container';
-import Editor from '@/components/Notes/Editor'; 
+import Editor from '@/components/Notes/Editor2'; 
 import { createClient } from '@/utils/supabase/client'; 
 import { useSession } from "next-auth/react";
 import { usePathname } from 'next/navigation'; 
@@ -23,6 +23,7 @@ export default function NotePage() {
   const [compileError, setCompileError] = useState(null);
   const [isCompiling, setIsCompiling] = useState(false);
   const [isLoading, setIsLoading] = useState(true); // 新增：加载状态
+  const [isInitialized, setIsInitialized] = useState(false); // 新增：初始化状态
   const pathname = usePathname(); 
   const pathSegments = pathname
     .replace(/^\//, '')
@@ -38,7 +39,9 @@ export default function NotePage() {
   const [editorContent, setEditorContent] = useState('');
   const [isSaving, setIsSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
+  const [deleteSuccess, setDeleteSuccess] = useState(false);
   const supabase = createClient(); 
+
 
   // 稳定更新编辑器内容的回调
   const stableUpdateContent = useCallback((content) => {
@@ -65,13 +68,14 @@ export default function NotePage() {
           .eq('user_id', userId)
           .eq('category', category)
           .eq('title', title)
-          .single(); // 确保唯一记录
+          .single();
 
         if (supabaseError) throw new Error(supabaseError.message);
         if (!data) throw new Error('未找到匹配的文档');
 
         // 初始化编辑器内容
         stableUpdateContent(data.content);
+        setIsInitialized(true)
       } catch (err) {
         setError(`加载内容失败：${err.message}`);
       } finally {
@@ -80,7 +84,7 @@ export default function NotePage() {
     };
 
     fetchContent();
-  }, [userId, category, title, supabase, stableUpdateContent]);
+  }, [userId, category, title, supabase]);
 
   // 新增：更新逻辑（替换原保存逻辑）
   const handleUpdate = useCallback(async () => {
@@ -141,6 +145,7 @@ export default function NotePage() {
   if (saveSuccess) {
     setTimeout(() => {
       setSaveSuccess(false);
+      router.push(`/admin/editor/${session.user.id}`)
     }, 2000);
   }
 
@@ -216,18 +221,21 @@ export default function NotePage() {
       {/* 编辑器和预览区域 */}
       <div className="flex rounded-2xl shadow-md bg-white overflow-hidden dark:bg-[#1f1f1f] dark:shadow-lg dark:shadow-cyan-500/50">
         <div className="w-1/2 p-6 border-r border-gray-100">
-          <Editor
-            getValue={stableUpdateContent}
-            theme={resolvedTheme === 'dark' ? 'vs-dark' : 'light'}
-            style={{
-              minHeight: 'calc(100vh - 2rem)',
-              width: '100%',
-              borderRadius: '0.75rem',
-              padding: '1.5rem',
-              fontSize: '0.875rem',
-              lineHeight: '1.6'
-            }}
-          />
+          {isInitialized && (
+            <Editor
+              getValue={stableUpdateContent}
+              content={editorContent}
+              theme={resolvedTheme === 'dark' ? 'vs-dark' : 'light'}
+              style={{
+                minHeight: 'calc(100vh - 2rem)',
+                width: '100%',
+                borderRadius: '0.75rem',
+                padding: '1.5rem',
+                fontSize: '0.875rem',
+                lineHeight: '1.6'
+              }}
+            />
+          )}
         </div>
 
         <div className="w-1/2 p-2">

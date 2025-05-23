@@ -22,7 +22,6 @@ export function Header( { children }) {
       className={clsx(
         'bg-[#FFFAF0]/75 py-2 backdrop-blur dark:bg-gray-800/75',
         'shadow-sm saturate-100 md:rounded-2xl',
-        SITE_METADATA.stickyNav && 'sticky top-2 z-50 lg:top-3'
       )}
     >
       <div className="flex items-center justify-between gap-2">

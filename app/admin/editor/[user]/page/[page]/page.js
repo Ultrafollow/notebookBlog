@@ -48,6 +48,7 @@ export default async function BlogPage({ params }) {
         initialDisplayPosts={initialDisplayPosts}
         pagination={pagination}
         title="All Posts"
+        user={session_id}
       />
     </Suspense>
   )

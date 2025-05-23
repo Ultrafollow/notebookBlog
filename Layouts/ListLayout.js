@@ -5,10 +5,11 @@ import { useState,useEffect } from 'react'
 import { Container } from '@/components/ui/Container'
 import { Link } from '@/components/ui/Link'
 import Pagination from '@/components/ui/Pagination'
+import UserPagination from '@/components/ui/UserPagination'
 import Search from '@/components/Search/Search'
 import { formatDate } from '@/app/lib/client-utils'
 import { GrowingUnderline } from '@/components/ui/Growing-underline'
-import { useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation'; 
 
 export default function ListLayout({
   posts,          // 全部原始文章数据（始终基于完整数据集）
@@ -18,8 +19,12 @@ export default function ListLayout({
   default_user,
   user
 }) {
-  const router = useRouter();
-  const relocation = (user === default_user)
+  const pathname = usePathname();
+  const pathSegments = pathname
+    .replace(/^\//, '')
+    .split('/')
+    .filter(segment => segment !== '');
+  const relocation = (user === default_user) && (pathSegments[1] === 'blog')
   const [isLoading, setIsLoading] = useState(true)
   const [searchValue, setSearchValue] = useState('')
   const [selectedTags, setSelectedTags] = useState([])
@@ -144,15 +149,17 @@ export default function ListLayout({
                                 max-w-fit">
                     {post.category}
                   </span>
-                  <Link
-                    href={`/admin/editor/${user}/${post.path}/edit`}
-                    className="inline-flex items-center rounded-full
+                  {!relocation && (
+                    <Link
+                      href={`/admin/editor/${user}/${post.path}/edit`}
+                      className="inline-flex items-center rounded-full
                                 bg-green-100 dark:bg-gray-700 px-3 py-1.5
                                 text-sm font-medium text-gray-700 dark:text-gray-200
                                 max-w-fit hover:bg-red-200 dark:hover:bg-gray-600"
-                  >
+                    >
                       edit
-                  </Link>
+                    </Link>
+                  )}
                 </div>
 
                 {/* 右侧内容 */}
@@ -210,7 +217,11 @@ export default function ListLayout({
          !searchValue && 
          selectedTags.length === 0 && (
           <div className="border-t border-gray-200 dark:border-gray-700 pt-8">
-            <Pagination {...pagination} />
+            {!relocation? (
+                    <UserPagination {...pagination} user={user} />
+                  ): (
+                    <Pagination {...pagination} />
+                  )}
           </div>
         )}
       </div>
