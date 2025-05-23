@@ -1,5 +1,8 @@
 import NextAuth from "next-auth"
 import GitHub from "next-auth/providers/github"
+import { generateStableId } from "@/app/lib/utils"
+
+
 export const { handlers, auth, signIn, signOut } = NextAuth({ 
     providers: [ GitHub ],
     session:{
@@ -11,7 +14,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         },
         session: async ({ session, token }) => {
             if (session.user && token?.sub) {
-                session.user.id = token.sub
+                session.user.id = generateStableId(session.user.email)
             }
             return session
         },

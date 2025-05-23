@@ -18,7 +18,7 @@ export default async function WebAuth() {
         <form
           action={async () => {
             "use server"
-            await signIn("github") // 显式指定provider
+            await signIn("github")
           }}
         >
           <button

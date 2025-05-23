@@ -1,42 +1,57 @@
 import { auth } from "auth"
-import { createClient } from '@/utils/supabase/server';
+import { redirect } from 'next/navigation' 
+import { Suspense } from 'react'
+import { ListLayoutSkeleton } from '@/components/ui/BlogSkeleton'
+import ListLayout from '@/Layouts/ListLayout'
+import { getCategoriesWithPosts } from '@/app/lib/utils'
+import { genPageMetadata } from '@/app/seo'
+
+export let metadata = genPageMetadata({ title: '你的Blog' })
+
+const POSTS_PER_PAGE = 5
 
 export default async function userPage () {
   const session = await auth()
-  const supabase = await createClient();
-  const { data, error } = await supabase
-    .from('mdx_documents')
-    .select('content, updated_at')
-    .eq('user_id', session.user.id) // 根据用户 ID 查询数据
-    .order('updated_at', { ascending: false })
-  if (error) {
-    console.error('Error fetching data:', error);
-    return null;
+  if (!session?.user) {
+    redirect("/"); // 跳转到登录页
   }
-  if (!data || data.length === 0) {
-    return <div>该用户还没有保存任何内容</div>
+  const session_id = session.user.id;
+  // 获取所有分类数据
+  const categoriesData = await getCategoriesWithPosts({session_id})
+  // 处理文章数据
+  const allPosts = categoriesData
+  .flatMap(cat => 
+    cat.posts.map(post => ({
+      ...post,
+      path: `${decodeURIComponent(cat.category)}/${post.slug}`,
+      date: post.date || new Date().toISOString()
+    }))
+  )
+  // 新增排序逻辑
+  .sort((a, b) => {
+    const dateA = new Date(a.date).getTime()
+    const dateB = new Date(b.date).getTime()
+    return dateB - dateA  // 降序排列（最新在前）
+  })
+  // 首页显示第一页内容
+  const initialDisplayPosts = allPosts.slice(0, POSTS_PER_PAGE)
+ 
+  // 分页器配置
+  const pagination = {
+    currentPage: 1,
+    totalPages: Math.ceil(allPosts.length / POSTS_PER_PAGE)
   }
-
-    return (
-        <div className="p-4">
-        <h2 className="text-xl font-bold mb-4">用户 {session.user.name} 的文档列表</h2>
-        <ul className="space-y-2">
-            {data.map((doc, index) => (
-            <li
-                key={index}
-                className="border p-3 rounded-lg"
-            >
-                <div className="text-sm text-gray-500 mb-2">
-                修改时间：{new Date(doc.updated_at).toLocaleString()}
-                </div>
-                <div className="text-base">
-                {doc.content.length > 200 
-                    ? `${doc.content.slice(0, 200)}...` // 截断长内容
-                    : doc.content}
-                </div>
-            </li>
-            ))}
-        </ul>
-        </div>
+ 
+  return (
+    <Suspense fallback={<ListLayoutSkeleton />}>
+      <ListLayout
+        posts={allPosts}
+        initialDisplayPosts={initialDisplayPosts}
+        pagination={pagination}
+        title="All Posts"
+        user={session_id}
+        default_user={process.env.DEFAULT_SESSION_ID}
+      />
+    </Suspense>
   )
 }

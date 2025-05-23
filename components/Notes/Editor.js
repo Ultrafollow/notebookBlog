@@ -8,7 +8,7 @@ loader.config({
   paths: { vs: "https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.33.0/min/vs/" } 
 });
 
-function MonacoEditor({ getValue, theme }) {
+function MonacoEditor({ getValue, content, theme }) {
   // 存储编辑器实例的 ref
   const editorRef = useRef(null);
   // 存储事件监听的 dispose 函数（用于清理）
@@ -25,7 +25,13 @@ function MonacoEditor({ getValue, theme }) {
     });
 
     // 初始化时设置内容（避免 value 变化触发重新渲染）
-    editor.setValue('# 开始编辑');
+    editor.setValue(`---
+title: example
+date: yyyy-m-day
+tags: ['tag1','tag2']
+summary: 'example'
+---
+# 正文内容`);
   }, []);
 
   // 组件卸载时清理事件监听

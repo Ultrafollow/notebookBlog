@@ -8,13 +8,18 @@ import Pagination from '@/components/ui/Pagination'
 import Search from '@/components/Search/Search'
 import { formatDate } from '@/app/lib/client-utils'
 import { GrowingUnderline } from '@/components/ui/Growing-underline'
+import { useRouter } from 'next/navigation';
 
 export default function ListLayout({
   posts,          // 全部原始文章数据（始终基于完整数据集）
   initialDisplayPosts = [],  // 初始分页数据
   pagination,
-  title
+  title,
+  default_user,
+  user
 }) {
+  const router = useRouter();
+  const relocation = (user === default_user)
   const [isLoading, setIsLoading] = useState(true)
   const [searchValue, setSearchValue] = useState('')
   const [selectedTags, setSelectedTags] = useState([])
@@ -139,6 +144,15 @@ export default function ListLayout({
                                 max-w-fit">
                     {post.category}
                   </span>
+                  <Link
+                    href={`/admin/editor/${user}/${post.path}/edit`}
+                    className="inline-flex items-center rounded-full
+                                bg-green-100 dark:bg-gray-700 px-3 py-1.5
+                                text-sm font-medium text-gray-700 dark:text-gray-200
+                                max-w-fit hover:bg-red-200 dark:hover:bg-gray-600"
+                  >
+                      edit
+                  </Link>
                 </div>
 
                 {/* 右侧内容 */}
@@ -146,7 +160,10 @@ export default function ListLayout({
                   <div className="space-y-3">
                     <h2 className="text-2xl font-bold leading-tight">
                       <Link
-                        href={`/blog/${post.path}`}
+                        href={!relocation 
+                              ? `/admin/editor/${user}/${post.path}`
+                              : `/blog/${post.path}`
+  }
                         className="text-gray-900 dark:text-gray-100"
                       >
                         <GrowingUnderline>{post.title}</GrowingUnderline>

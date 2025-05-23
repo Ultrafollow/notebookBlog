@@ -30,7 +30,7 @@ export async function getPost(params) {
     const {category, slug} = await params
     const decategory = decodeURIComponent(category)
     const deslug = decodeURIComponent(slug)
-    const session_id = "fc96345b-fdc5-4b0c-9a07-51021c489234"; // 替换为实际的用户 ID
+    const session_id = process.env.DEFAULT_SESSION_ID; // 替换为实际的用户 ID
     const categoriesData = await getCategoriesWithPosts({session_id})
     
     // 查找匹配分类
@@ -93,7 +93,7 @@ export async function generateMetadata({ params }) {
 
   try {
 
-    const session_id = "fc96345b-fdc5-4b0c-9a07-51021c489234";
+    const session_id = process.env.DEFAULT_SESSION_ID;
     const categoriesData = await getCategoriesWithPosts({session_id})
     const targetCategory = categoriesData.find(c => 
       decodeURIComponent(c.category) === decodedCategory

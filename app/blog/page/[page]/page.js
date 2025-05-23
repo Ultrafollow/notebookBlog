@@ -8,7 +8,7 @@ const POSTS_PER_PAGE = 5
 export default async function BlogPage({ params }) {
   const { page } = await params
   const currentPage = Number(page) || 1
-  const session_id = "fc96345b-fdc5-4b0c-9a07-51021c489234"; // 替换为实际的用户 ID
+  const session_id = process.env.DEFAULT_SESSION_ID; // 替换为实际的用户 ID
   // 获取所有分类数据
   const categoriesData = await getCategoriesWithPosts({session_id})
 

@@ -41,10 +41,10 @@ export default function NotePage() {
     }
     const { data: metadata } = matter(editorContent);
     const slug = metadata.title
-      .replace(/\s+/g, '-') // 空格转短横线
-      .replace(/[^\w\u4e00-\u9fa5-]+/g, '') // 保留单词字符、中文字符、短横线
-      .replace(/--+/g, '-') // 合并连续短横线
-      .replace(/^-+|-+$/g, ''); // 移除首尾短横线
+    .replace(/\s+/g, '-') // 空格转短横线
+    .replace(/[^\w\u4e00-\u9fa5-]+/g, '') // 保留单词字符、中文字符、短横线
+    .replace(/--+/g, '-') // 合并连续短横线
+    .replace(/^-+|-+$/g, ''); // 移除首尾短横线
     const category = prompt('请输入笔记分类（例如：技术、生活）：');
     if (category === null) { // 用户点击取消
       setError('已取消保存');
@@ -144,6 +144,7 @@ export default function NotePage() {
         <div className="w-1/2 p-6 border-r border-gray-100">
           <Editor
             getValue={stableUpdateContent}
+            content={editorContent? editorContent : '# 开始编辑'}
             theme={resolvedTheme === 'dark' ? 'vs-dark' : 'light'}
             style={{
               minHeight: 'calc(100vh - 2rem)',

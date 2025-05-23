@@ -21,55 +21,33 @@ import readingTime from 'reading-time';
 import Twemoji from '@/components/ui/Twemoji.js';
 import { SITE_METADATA } from '@/data/site-metadata'
 import { TreeWrapper } from '@/components/Plugins/Antd';
+import { auth } from "auth"
 
 registerPrismLanguages()
- 
-// 获取解码后的分类目录
-// export async function generateStaticParams() {
-//   const categoriesData = await getCategoriesWithPosts()
-//   return categoriesData.flatMap(({ category, posts }) => 
-//     posts.map(post => ({
-//       category: decodeURIComponent(category),
-//       slug: post.slug
-//     }))
-//   )
-// }
 
 export async function getPost(params) {
   try {
+    const session = await auth()
+    if (!session?.user) {
+    redirect("/"); // 跳转到登录页
+    }
     // 解码 URL 参数
     const {category, slug} = await params
-    const decodedCategory = decodeURIComponent(category)
-    const decodedSlug = decodeURIComponent(slug)
-    // 获取数据
-    const categoriesData = await getCategoriesWithPosts()
+    const decategory = decodeURIComponent(category)
+    const deslug = decodeURIComponent(slug)
+    const session_id = session.user.id; // 替换为实际的用户 ID
+    const categoriesData = await getCategoriesWithPosts({session_id})
     
     // 查找匹配分类
     const targetCategory = categoriesData.find(c => 
-      decodeURIComponent(c.category) === decodedCategory
+      c.category === decategory
     )
     if (!targetCategory) throw new Error('分类不存在')
     // 查找匹配文章
-    const post = targetCategory.posts.find(p => p.slug === decodedSlug)
+    const post = targetCategory.posts.find(p => p.slug === deslug)
     if (!post) throw new Error('文章不存在')
-    var mdxPath = path.join(process.cwd(), 'content', decodedCategory, `${decodedSlug}.mdx`);  
-    var mdPath = path.join(process.cwd(), 'content', decodedCategory, `${decodedSlug}.md`);  
 
-    let mdxSource
-    try {
-      // 先尝试读取 .mdx 文件
-      await fs.access(mdxPath);
-      mdxSource = await fs.readFile(mdxPath, 'utf8');
-    } catch (mdxError) {
-      // 如果 .mdx 不存在，尝试读取 .md
-      try {
-        await fs.access(mdPath);
-        mdxSource = await fs.readFile(mdPath, 'utf8');
-      } catch (mdError) {
-        // 两个文件都不存在时返回404
-        notFound();
-      }
-    }
+    let mdxSource = post.content
     const { text: readingTimeText, minutes } = readingTime(mdxSource);
     const { code } = await bundleMDX({
       source: mdxSource,
@@ -113,52 +91,54 @@ export async function getPost(params) {
 }
  
 // 最终版 generateMetadata
-// export async function generateMetadata({ params }) {
-//   const {category, slug} = await params
-//   const decodedCategory = decodeURIComponent(category);
-//   const decodedSlug = decodeURIComponent(slug);
+export async function generateMetadata({ params }) {
+  const {category, slug} = await params
+  const decodedCategory = decodeURIComponent(category);
+  const decodedSlug = decodeURIComponent(slug);
 
-//   try {
-//     const categoriesData = await getCategoriesWithPosts();
-//     const targetCategory = categoriesData.find(c => 
-//       decodeURIComponent(c.category) === decodedCategory
-//     );
-//     if (!targetCategory) throw new Error('分类未找到');
+  try {
 
-//     const post = targetCategory.posts.find(p => p.slug === decodedSlug);
-//     if (!post) throw new Error('文章未找到');
+    const session_id = process.env.DEFAULT_SESSION_ID;
+    const categoriesData = await getCategoriesWithPosts({session_id})
+    const targetCategory = categoriesData.find(c => 
+      decodeURIComponent(c.category) === decodedCategory
+    );
+    if (!targetCategory) throw new Error('分类未找到');
 
-//     // 构建封面图URL
-//     const coverImage = post.coverImage 
-//       ? new URL(post.coverImage, SITE_METADATA.siteUrl).toString()
-//       : new URL('/default-og.jpg', SITE_METADATA.siteUrl).toString();
+    const post = targetCategory.posts.find(p => p.slug === decodedSlug);
+    if (!post) throw new Error('文章未找到');
 
-//     return {
-//       title: `${post.title} | ${decodedCategory}`,
-//       description: post.summary || '技术文章分享',
-//       alternates: {
-//         canonical: `/blog/${encodeURIComponent(decodedCategory)}/${encodeURIComponent(decodedSlug)}`
-//       },
-//       openGraph: {
-//         title: post.title,
-//         description: post.summary,
-//         type: 'article',
-//         publishedTime: post.date,
-//         authors: [post.author || 'followxu'],
-//         images: [{
-//           url: coverImage,
-//           width: 1200,
-//           height: 630,
-//           alt: post.title,
-//         }]
-//       },
-//     };
+    // 构建封面图URL
+    const coverImage = post.coverImage 
+      ? new URL(post.coverImage, SITE_METADATA.siteUrl).toString()
+      : new URL('/default-og.jpg', SITE_METADATA.siteUrl).toString();
+
+    return {
+      title: `${post.title} | ${decodedCategory}`,
+      description: post.summary || '技术文章分享',
+      alternates: {
+        canonical: `/blog/${encodeURIComponent(decodedCategory)}/${encodeURIComponent(decodedSlug)}`
+      },
+      openGraph: {
+        title: post.title,
+        description: post.summary,
+        type: 'article',
+        publishedTime: post.date,
+        authors: [post.author || 'followxu'],
+        images: [{
+          url: coverImage,
+          width: 1200,
+          height: 630,
+          alt: post.title,
+        }]
+      },
+    };
     
-//   } catch (error) {
-//     console.error('元数据生成失败:', error);
-//     return fallbackMetadata();
-//   }
-// }
+  } catch (error) {
+    console.error('元数据生成失败:', error);
+    return fallbackMetadata();
+  }
+}
 
 
 export default async function PostPage({ params }) {
@@ -199,7 +179,7 @@ export default async function PostPage({ params }) {
         </div>
         {frontmatter.summary && (
           <p className='mt-4 text-lg text-gray-600 dark:text-gray-300'>
-            {frontmatter.summary}
+            摘要:  {frontmatter.summary}
           </p>
         )}
         {frontmatter.tags && (

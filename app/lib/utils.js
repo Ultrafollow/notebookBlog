@@ -3,9 +3,16 @@ import fs from 'fs/promises'
 import querystring from 'querystring'
 import matter from 'gray-matter'
 import { createClient } from '@/utils/supabase/server'
+import * as crypto from "crypto";  
+ 
+export function generateStableId(email) {
+  // 对邮箱进行 SHA-256 哈希，转为十六进制字符串
+  const hash = crypto.createHash('sha256').update(email).digest('hex');
+  // 取前 16 位作为短 ID（可根据需求调整长度）
+  return hash
+}
 
-
-const defaultSessionId = "fc96345b-fdc5-4b0c-9a07-51021c489234";
+const defaultSessionId = process.env.DEFAULT_SESSION_ID;
 // 获取所有分类名称（用于导航栏）
 export async function getCategories() {
   const contentDir = path.join(process.cwd(), 'content')
@@ -55,7 +62,6 @@ export async function getCategoriesWithPosts({auth_id}) {
       try {
         // 解析 content 中的 Markdown 元数据（title, date 等）
         const { data: metadata } = matter(doc.content);
-        console.log('metadata',metadata)
         // 生成 slug（使用 title 替换特殊字符，确保唯一）
         const slug = metadata.title
           .replace(/\s+/g, '-') // 空格转短横线
