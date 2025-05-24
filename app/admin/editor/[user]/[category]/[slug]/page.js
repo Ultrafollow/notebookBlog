@@ -152,7 +152,7 @@ export async function generateMetadata({ params }) {
       title: `${post.title} | ${decodedCategory}`,
       description: post.summary || '技术文章分享',
       alternates: {
-        canonical: `/blog/${encodeURIComponent(decodedCategory)}/${encodeURIComponent(decodedSlug)}`
+        canonical: `/admin/editor/${user}/${encodeURIComponent(decodedCategory)}/${encodeURIComponent(decodedSlug)}`
       },
       openGraph: {
         title: post.title,
