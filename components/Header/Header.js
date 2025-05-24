@@ -5,7 +5,6 @@ import { Container } from '@/components/ui/Container';
 import { GrowingUnderline } from '@/components/ui/Growing-underline';
 import { Link } from '@/components/ui/Link';
 import { HEADER_NAV_LINKS } from '@/data/navigation';
-import { SITE_METADATA } from '@/data/site-metadata';
 import { Logo } from './Logo';
 import AnimatedThemeSwitch from './Switch';
 import DocSearch from '@/components/Search/DocSearch';
@@ -30,7 +29,7 @@ export function Header( { children }) {
           <div className="hidden gap-1.5 sm:flex">
             <DocSearch />
             {HEADER_NAV_LINKS.map(({ title, href }) => {
-              const isActive = pathname.startsWith(href);
+              const isActive = pathname === href;
               return (
                 <Link key={title} href={href} className="px-3 py-1 font-medium">
                   <GrowingUnderline

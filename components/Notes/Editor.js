@@ -27,7 +27,7 @@ function MonacoEditor({ getValue, content, theme }) {
     // 初始化时设置内容（避免 value 变化触发重新渲染）
     editor.setValue(`---
 title: example
-date: yyyy-m-day
+date: 2000-12-20
 tags: ['tag1','tag2']
 summary: 'example'
 ---

@@ -12,10 +12,12 @@ import Editor from '@/components/Notes/Editor';
 import { createClient } from '@/utils/supabase/client'; // 导入 Supabase 客户端
 import { useSession } from "next-auth/react"
 import { useRouter } from 'next/navigation';
+import CheckKey from '@/components/Author/CheckKey';
 import matter from 'gray-matter'
 
 export default function NotePage() {
   const { data: session } = useSession()
+
   const router = useRouter();
   const { resolvedTheme } = useTheme(); 
   const [error, setError] = useState(null);
@@ -35,6 +37,15 @@ export default function NotePage() {
 
   // 新增：保存到 Supabase 的函数
   const handleSave = useCallback(async () => {
+    if (!session?.user?.id) {
+      alert('请先登录后再保存');
+      return;
+    }
+    let isAllowed = CheckKey(session.user.id);
+    if (!isAllowed) {
+      alert(`当前用户无保存权限，请附上你的用户ID：${session.user.id}，联系站长开放权限！`);
+      return;
+    }
     if (!editorContent.trim()) { // 内容为空时提示
       setError('内容不能为空');
       return;
