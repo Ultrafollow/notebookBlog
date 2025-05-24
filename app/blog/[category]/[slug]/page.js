@@ -68,7 +68,7 @@ export async function getPost(params) {
     if (!targetCategory) throw new Error('分类不存在')
     // 查找匹配文章
     const post = targetCategory.posts.find(p => p.slug === deslug)
-    if (!post) throw new Error('不知为何文章不存在')
+    if (!post) throw new Error('文章不存在')
 
     let mdxSource = post.content
     const { text: readingTimeText, minutes } = readingTime(mdxSource);
