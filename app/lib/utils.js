@@ -45,6 +45,7 @@ export async function getCategoriesWithPosts({auth_id}) {
   }
   const supabase = await createClient();
   const auth2_id = auth_id
+  console.log('auth2_id', auth2_id)
   try {
     // 从 Supabase 查询所有文章（假设表名为 mdx_documents）
     const { data: posts, error } = await supabase
@@ -81,7 +82,7 @@ export async function getCategoriesWithPosts({auth_id}) {
           id: doc.id, // 保留数据库 ID
           userId: doc.user_id // 保留用户 ID
         };
- 
+        console.log('post', post)
         // 按分类分组
         if (!categoryMap.has(doc.category)) {
           categoryMap.set(doc.category, {
