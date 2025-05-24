@@ -54,12 +54,31 @@ export async function generateStaticParams() {
 }
 
 export async function getPost(params) {
+
+    const session_id1 = process.env.DEFAULT_SESSION_ID;
+    const categoriesData1 = await getCategoriesWithPosts({ session_id1 });
+
+    // 遍历分类和文章，生成所有可能的 [category]/[slug] 路径参数
+    const blogpath = [];
+    for (const category of categoriesData1) {
+      // 遍历当前分类下的所有文章
+      for (const post of category.posts) {
+        // 对 category 和 slug 进行 URL 编码（与页面解码逻辑一致）
+        const deCategory = encodeURIComponent(category.category);
+        const deSlug = encodeURIComponent(post.slug);
+        blogpath.push({
+          category: deCategory,
+          slug: deSlug,
+        });
+      }
+    }
+    console.log('params', blogpath)
   try {
     // 解码 URL 参数
     const {category, slug} = await params
     const decategory = decodeURIComponent(category)
     const deslug = decodeURIComponent(slug)
-    const session_id = process.env.DEFAULT_SESSION_ID; // 替换为实际的用户 ID
+    const session_id = process.env.DEFAULT_SESSION_ID;
     const categoriesData = await getCategoriesWithPosts({session_id})
     
     // 查找匹配分类
@@ -69,7 +88,7 @@ export async function getPost(params) {
     if (!targetCategory) throw new Error('分类不存在')
     // 查找匹配文章
     const post = targetCategory.posts.find(p => p.slug === deslug)
-    if (!post) throw new Error('文章不存在')
+    if (!post) throw new Error('不知为何文章不存在')
 
     let mdxSource = post.content
     const { text: readingTimeText, minutes } = readingTime(mdxSource);
