@@ -127,13 +127,13 @@ export async function getPost(params) {
  
 // 最终版 generateMetadata
 export async function generateMetadata({ params }) {
-  const {category, slug} = await params
+  const {user, category, slug} = await params
   const decodedCategory = decodeURIComponent(category);
   const decodedSlug = decodeURIComponent(slug);
 
   try {
 
-    const session_id = process.env.DEFAULT_SESSION_ID;
+    const session_id = user;
     const categoriesData = await getCategoriesWithPosts({session_id})
     const targetCategory = categoriesData.find(c => 
       decodeURIComponent(c.category) === decodedCategory
