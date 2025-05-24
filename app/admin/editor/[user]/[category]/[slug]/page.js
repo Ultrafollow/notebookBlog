@@ -34,7 +34,7 @@ export async function getPost(params) {
     const {category, slug} = await params
     const decategory = decodeURIComponent(category)
     const deslug = decodeURIComponent(slug)
-    const session_id = session.user.id; // 替换为实际的用户 ID
+    const session_id = session.user.id;
     const categoriesData = await getCategoriesWithPosts({session_id})
     
     // 查找匹配分类

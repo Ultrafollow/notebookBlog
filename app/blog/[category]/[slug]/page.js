@@ -24,6 +24,36 @@ import { TreeWrapper } from '@/components/Plugins/Antd';
 
 registerPrismLanguages()
 
+export async function generateStaticParams() {
+  try {
+    // 使用默认 session_id 获取所有分类和文章（构建时无用户会话）
+    const session_id = process.env.DEFAULT_SESSION_ID;
+    const categoriesData = await getCategoriesWithPosts({ session_id });
+ 
+    // 遍历分类和文章，生成所有可能的 [category]/[slug] 路径参数
+    const params = [];
+    for (const category of categoriesData) {
+      // 遍历当前分类下的所有文章
+      for (const post of category.posts) {
+        // 对 category 和 slug 进行 URL 编码（与页面解码逻辑一致）
+        const encodedCategory = encodeURIComponent(category.category);
+        const encodedSlug = encodeURIComponent(post.slug);
+        
+        params.push({
+          category: encodedCategory,
+          slug: encodedSlug,
+        });
+      }
+    }
+ 
+    return params;
+  } catch (error) {
+    console.error('生成静态路径失败:', error);
+    // 构建时若数据获取失败，返回空数组（避免整个构建失败）
+    return [];
+  }
+}
+
 export async function getPost(params) {
   try {
     // 解码 URL 参数
