@@ -33,7 +33,7 @@ export async function POST(request) {
       },
       esbuildOptions: (options) => {
         options.outdir = path.join(process.cwd(), 'public'); // 输出目录（可选）
-        options.write = false; // 不写入文件系统，仅返回代码
+        options.write = false;
         return options;
       }
     });
