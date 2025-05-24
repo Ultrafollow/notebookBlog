@@ -1,5 +1,4 @@
 import path from 'path';
-import fs from 'fs/promises'
 import { bundleMDX } from 'mdx-bundler'
 import { getCategoriesWithPosts } from '@/app/lib/utils'
 import { getMDXComponent } from 'mdx-bundler/client'

@@ -24,6 +24,7 @@ export default function ListLayout({
     .replace(/^\//, '')
     .split('/')
     .filter(segment => segment !== '');
+  console.log(pathSegments)
   const relocation = (user === default_user) && (pathSegments[1] === 'blog')
   const [isLoading, setIsLoading] = useState(true)
   const [searchValue, setSearchValue] = useState('')
