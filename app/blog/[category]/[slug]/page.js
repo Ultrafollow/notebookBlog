@@ -1,5 +1,4 @@
 import path from 'path';
-import fs from 'fs/promises'
 import { bundleMDX } from 'mdx-bundler'
 import { getCategoriesWithPosts } from '@/app/lib/utils'
 import { getMDXComponent } from 'mdx-bundler/client'
@@ -54,25 +53,6 @@ export async function generateStaticParams() {
 }
 
 export async function getPost(params) {
-
-    const session_id1 = process.env.DEFAULT_SESSION_ID;
-    const categoriesData1 = await getCategoriesWithPosts({ session_id1 });
-
-    // 遍历分类和文章，生成所有可能的 [category]/[slug] 路径参数
-    const blogpath = [];
-    for (const category of categoriesData1) {
-      // 遍历当前分类下的所有文章
-      for (const post of category.posts) {
-        // 对 category 和 slug 进行 URL 编码（与页面解码逻辑一致）
-        const deCategory = encodeURIComponent(category.category);
-        const deSlug = encodeURIComponent(post.slug);
-        blogpath.push({
-          category: deCategory,
-          slug: deSlug,
-        });
-      }
-    }
-    console.log('params', blogpath)
   try {
     // 解码 URL 参数
     const {category, slug} = await params
