@@ -94,7 +94,7 @@ export async function getPost(params) {
       },
       esbuildOptions: options => {
         options.outdir = path.join(process.cwd(), 'public')
-        options.write = true
+        options.write = false
         return options
       }
     })
