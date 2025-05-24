@@ -5,7 +5,7 @@ export default async function sitemap() {
   const siteUrl = SITE_METADATA.siteUrl
   
   // 1. 处理静态路由
-  const staticRoutes = ['', 'about'].map((route) => ({
+  const staticRoutes = ['', 'about',].map((route) => ({
     url: `${siteUrl}/${route}`,
     lastModified: new Date().toISOString(),
     changefreq: 'daily',
@@ -13,19 +13,19 @@ export default async function sitemap() {
   }))
 
   // 2. 处理博客文章
-  const blogRoutes = (await getCategoriesWithPosts())
-    .flatMap(({ category, posts }) => 
-      posts.map(post => {
-        // 正确编码分类目录
-        const encodedCategory = encodeURIComponent(category)
-        return {
-          url: `${siteUrl}/blog/${encodedCategory}/${post.slug}`,
-          lastModified: new Date(post.lastmod || post.date).toISOString(),
-          changefreq: 'monthly',
-          priority: 0.8
-        }
-      })
-    )
+  // const blogRoutes = (await getCategoriesWithPosts())
+  //   .flatMap(({ category, posts }) => 
+  //     posts.map(post => {
+  //       // 正确编码分类目录
+  //       const encodedCategory = encodeURIComponent(category)
+  //       return {
+  //         url: `${siteUrl}/blog/${encodedCategory}/${post.slug}`,
+  //         lastModified: new Date(post.lastmod || post.date).toISOString(),
+  //         changefreq: 'monthly',
+  //         priority: 0.8
+  //       }
+  //     })
+  //   )
 
-  return [...staticRoutes, ...blogRoutes]
+  return [...staticRoutes]
 }
