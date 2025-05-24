@@ -27,3 +27,18 @@ export async function createClient() {
     }
   )
 }
+
+export async function createServiceClient() {
+  return createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL,
+    process.env.SUPABASE_SERVICE_ROLE_KEY, // 服务角色密钥（需添加到环境变量）
+    {
+      cookies: {
+        getAll() {
+          return []; // 服务角色无需 cookies
+        },
+        setAll() {}, // 无需设置 cookies
+      },
+    }
+  );
+}

@@ -2,7 +2,7 @@ import path from 'path'
 import fs from 'fs/promises'
 import querystring from 'querystring'
 import matter from 'gray-matter'
-import { createClient } from '@/utils/supabase/server'
+import { createClient, createServiceClient } from '@/utils/supabase/server'
 import * as crypto from "crypto";  
  
 export function generateStableId(email) {
@@ -43,7 +43,7 @@ export async function getCategoriesWithPosts({auth_id}) {
   if (!auth_id){
     auth_id = defaultSessionId
   }
-  const supabase = await createClient();
+  const supabase = await createServiceClient();
   const auth2_id = auth_id
   try {
     // 从 Supabase 查询所有文章（假设表名为 mdx_documents）
