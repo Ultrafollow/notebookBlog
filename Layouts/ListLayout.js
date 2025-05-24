@@ -24,8 +24,8 @@ export default function ListLayout({
     .replace(/^\//, '')
     .split('/')
     .filter(segment => segment !== '');
-  console.log('default_user:', default_user)
-  const relocation = (user === default_user) && (pathSegments[1] === 'blog')
+  const relocation = (pathSegments[1] === 'blog')
+  const showEdit = (pathSegments[0] === 'admin' && pathSegments[1] === 'editor')
   const [isLoading, setIsLoading] = useState(true)
   const [searchValue, setSearchValue] = useState('')
   const [selectedTags, setSelectedTags] = useState([])
@@ -150,7 +150,7 @@ export default function ListLayout({
                                 max-w-fit">
                     {post.category}
                   </span>
-                  {!relocation && (
+                  {showEdit && (
                     <Link
                       href={`/admin/editor/${user}/${post.path}/edit`}
                       className="inline-flex items-center rounded-full
