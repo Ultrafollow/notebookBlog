@@ -40,13 +40,13 @@ registerPrismLanguages()
       for (const category of categoriesData) {
         for (const post of category.posts) {
           // 对 category 和 slug 进行 URL 编码（与页面解码逻辑一致）
-          const encodedCategory = encodeURIComponent(category.category);
-          const encodedSlug = encodeURIComponent(post.slug);
+          const deCategory = decodeURIComponent(category.category);
+          const deSlug = decodeURIComponent(post.slug);
  
           params.push({
             user: userId,
-            category: encodedCategory,
-            slug: encodedSlug,
+            category: deCategory,
+            slug: deSlug,
           });
         }
       }
