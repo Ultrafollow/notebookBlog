@@ -35,11 +35,11 @@ export async function generateStaticParams() {
       // 遍历当前分类下的所有文章
       for (const post of category.posts) {
         // 对 category 和 slug 进行 URL 编码（与页面解码逻辑一致）
-        const deCategory = encodeURIComponent(category.category);
-        const deSlug = encodeURIComponent(post.slug);
+        // const deCategory = encodeURIComponent(category.category);
+        // const deSlug = encodeURIComponent(post.slug);
         params.push({
-          category: deCategory,
-          slug: deSlug,
+          category,
+          slug: post.slug
         });
       }
     }
