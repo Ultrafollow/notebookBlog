@@ -5,6 +5,7 @@ import { ListLayoutSkeleton } from '@/components/ui/BlogSkeleton'
 import ListLayout from '@/Layouts/ListLayout'
 import { getCategoriesWithPosts } from '@/app/lib/utils'
 import { genPageMetadata } from '@/app/seo'
+import { CheckKey } from '@/components/Author/CheckKeyServer';
 
 export let metadata = genPageMetadata({ title: '你的Blog' })
 
@@ -14,6 +15,10 @@ export default async function userPage () {
   const session = await auth()
   if (!session?.user) {
     redirect("/"); // 跳转到登录页
+  }
+  const location = await CheckKey({id: session.user.id});
+  if (!location) {
+    redirect("/");
   }
   const session_id = session.user.id;
   // 获取所有分类数据

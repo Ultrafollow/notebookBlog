@@ -12,7 +12,7 @@ import Editor from '@/components/Notes/Editor';
 import { createClient } from '@/utils/supabase/client'; // 导入 Supabase 客户端
 import { useSession } from "next-auth/react"
 import { useRouter } from 'next/navigation';
-import CheckKey from '@/components/Author/CheckKey';
+import { CheckKey } from '@/components/Author/CheckKey';
 import matter from 'gray-matter'
 
 export default function NotePage() {
@@ -41,7 +41,9 @@ export default function NotePage() {
       alert('请先登录后再保存');
       return;
     }
-    let isAllowed = CheckKey(session.user.id);
+
+    let isAllowed = CheckKey({id: session.user.id});
+
     if (!isAllowed) {
       alert(`当前用户无保存权限，请附上你的用户ID：${session.user.id}，联系站长开放权限！`);
       return;

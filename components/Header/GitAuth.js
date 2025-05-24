@@ -8,12 +8,14 @@ import {
     Mail,
 } from 'lucide-react' // 引入图标库
 import Tip from '@/components/Header/Tooltip'
-import { redirect } from 'next/navigation';
+import { CheckKey } from '@/components/Author/CheckKeyServer';
 
 
 export default async function WebAuth() {
   const session = await auth()
+  const location = await CheckKey({id: session?.user.id});
   const text = <span>{session?.user?.id}</span>
+
   // 未登录状态
   if (!session?.user) {
     return (
@@ -54,7 +56,7 @@ export default async function WebAuth() {
         {/* 下拉内容 */}
         <div className="
           absolute left-0 top-full mt-4 
-          min-w-[14rem] bg-white dark:bg-gray-700 
+          min-w-[16rem] bg-white dark:bg-gray-700 
           rounded-lg shadow-lg p-4 space-y-3
           border border-gray-100 dark:border-gray-600
         ">
@@ -66,20 +68,21 @@ export default async function WebAuth() {
             <div className="text-sm font-semibold text-gray-900 dark:text-white">
               <Tip text={text}>
                 <KeyRound className="inline-block mr-1" size={16} strokeWidth={2}/>
-                key:{session.user.id.slice(0, 8)+'...'}
+                key:{session.user.id.slice(0, 12)+'...'}
               </Tip>
             </div>
             <div className="text-sm font-semibold text-gray-900 dark:text-white">
                 <Mail className="inline-block mr-1" size={16} strokeWidth={2}/>
                 {session.user.email}
             </div>
-
-            <div className="mt-1">
+            {location && (
+              <div className="mt-1">
                 <Folders className="inline-block mr-1" size={16} strokeWidth={2}/>
                 <a href={`/admin/editor/${session.user.id}`} className="hover:underline text-sm text-gray-900 dark:text-white">
                     {session.user.name} 的笔记
                 </a>
-            </div>
+              </div>
+            )}
 
           {/* 退出按钮 */}
           <form
