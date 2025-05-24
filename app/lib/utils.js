@@ -54,7 +54,7 @@ export async function getCategoriesWithPosts({auth_id}) {
 
     if (error) throw new Error(`Supabase 查询失败: ${error.message}`);
     if (!posts || posts.length === 0) return [];
-    console.log('查询到的文章,选第一个:', posts[0]); // 关键日志
+    console.log('查询到的文章,选第一个:', posts[4]); // 关键日志
     // 按分类分组，并解析每篇文章的元数据
     const categoryMap = new Map();
  
