@@ -3,7 +3,7 @@
 import '@/app/globals.css';
 import '@/app/prism-dracula.css';
 import 'github-markdown-css';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useTheme } from 'next-themes'; 
 import { getMDXComponent } from 'mdx-bundler/client';
 import { TreeWrapper } from '@/components/Plugins/Antd';
@@ -19,20 +19,26 @@ export default function NotePage() {
   const { data: session } = useSession()
 
   const router = useRouter();
+  console.log('router', router);
   const { resolvedTheme } = useTheme(); 
   const [error, setError] = useState(null);
   const [compiledCode, setCompiledCode] = useState(null);
   const [compileError, setCompileError] = useState(null);
   const [isCompiling, setIsCompiling] = useState(false);
   const [editorContent, setEditorContent] = useState('');
+
   // 新增：保存相关状态
   const [isSaving, setIsSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
+  const [currentCategory, setCurrentCategory] = useState('');
+  const [currentSlug, setCurrentSlug] = useState('');
+  const [isContentModified, setIsContentModified] = useState(false);// 新增：内容修改状态
   const supabase = createClient(); // 初始化 Supabase 客户端
 
   const stableUpdateContent = useCallback((content) => {
     setEditorContent(content);
     setSaveSuccess(false); // 内容变化时重置保存成功状态
+    setIsContentModified(true); // 内容变化时标记为未保存
   }, []);
 
   // 新增：保存到 Supabase 的函数
@@ -77,7 +83,10 @@ export default function NotePage() {
         .select(); // 返回插入的数据
 
       if (supabaseError) throw new Error(supabaseError.message);
+      setCurrentCategory(category.trim()); // 保存分类（已去空格）
+      setCurrentSlug(slug); // 保存 slug
       setSaveSuccess(true); // 保存成功提示
+      setIsContentModified(false); // 保存成功，重置修改状态
     } catch (err) {
       setError(`保存失败：${err.message}`);
     } finally {
@@ -88,11 +97,80 @@ export default function NotePage() {
   if (saveSuccess) {
     setTimeout(() => {
       setSaveSuccess(false); // 3秒后重置保存成功状态
-      router.push(`/admin/editor/${session.user.id}`)
+      const postPath = `${currentCategory}/${currentSlug}`;
+      router.push(`/admin/editor/${session.user.id}/${postPath}/edit`);
+      // router.push(`/admin/editor/${session.user.id}`)
     }, 800);
   }
+useEffect(() => {
+  const handleBeforeUnload = (e) => {
+      if (isContentModified) {
+        e.preventDefault();
+        e.returnValue = ''; // 触发浏览器默认提示
+      }
+    };
+  window.addEventListener('beforeunload', handleBeforeUnload);
+  return () => {
+    window.removeEventListener('beforeunload', handleBeforeUnload);
+  };
+}, [isContentModified]);
 
-  useEffect(() => {
+
+useEffect(() => {
+  let isHandling = false;
+  const handlePopState = (e) => {
+    if (!isContentModified || isHandling) return;
+
+    isHandling = true;
+    e.preventDefault();
+    const confirmLeave = window.confirm('内容未保存，确定离开吗？');
+    
+    if (confirmLeave) {
+      router.back();
+    } else {
+      // 取消后退并保持当前页面
+      window.history.pushState(null, '', window.location.href);
+      isHandling = false; // 重置处理状态
+    }
+  };
+
+  // 添加初始历史记录
+  window.history.pushState(null, '', window.location.href);
+  
+  window.addEventListener('popstate', handlePopState);
+  
+  return () => {
+    window.removeEventListener('popstate', handlePopState);
+  };
+}, [isContentModified]); // 正确添加依赖项
+
+useEffect(() => {
+  const handleClick = (e) => {
+    const target = e.target.closest('a');
+    if (!target || !isContentModified) return;
+
+    // 阻止所有默认行为和冒泡
+    e.preventDefault();
+    e.stopPropagation();
+    e.stopImmediatePropagation();
+
+    const confirmLeave = window.confirm('内容未保存，确定离开吗？');
+    if (confirmLeave) {
+      // 统一使用 Next.js 路由跳转
+      if (target.href.startsWith(window.location.origin)) {
+        router.push(target.href.replace(window.location.origin, ''));
+      } else {
+        window.location.href = target.href; // 处理外部链接
+      }
+    }
+  };
+
+  // 使用捕获阶段确保优先处理
+  document.addEventListener('click', handleClick, true);
+  return () => document.removeEventListener('click', handleClick, true);
+}, [isContentModified, router]); // 添加 router 依赖
+
+useEffect(() => {
   const abortController = new AbortController(); // 内部生成，不通过 state 管理
   let isMounted = true; // 防止组件卸载后更新状态
  
