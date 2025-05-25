@@ -66,11 +66,11 @@ export default function NotePage() {
     .replace(/^-+|-+$/g, ''); // 移除首尾短横线
     const category = prompt('请输入笔记分类（例如：技术、生活）：');
     if (category === null) { // 用户点击取消
-      setError('已取消保存');
+      alert('已取消保存');
       return;
     }
     if (!category.trim()) { // 输入为空
-      setError('分类不能为空');
+      alert('分类不能为空');
       return;
     }
     setIsSaving(true);
