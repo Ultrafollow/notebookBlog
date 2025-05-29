@@ -4,6 +4,7 @@ import querystring from 'querystring'
 import matter from 'gray-matter'
 import { createClient, createServiceClient } from '@/utils/supabase/server'
 import * as crypto from "crypto";  
+import { auth } from '@/auth'
  
 export function generateStableId(email) {
   // 对邮箱进行 SHA-256 哈希，转为十六进制字符串
@@ -72,6 +73,7 @@ export async function getCategoriesWithPosts({auth_id}) {
           slug,
           title: metadata.title || `未命名文章-${doc.id}`, // 备用标题
           date: metadata.date || doc.updated_at, // 使用 matter 的 date，否则用数据库的 updated_at
+          author: metadata.author,
           path: `${doc.category}/${slug}`, // 路径（分类/slug）
           tags: metadata.tags || [],
           summary: metadata.summary || '',
