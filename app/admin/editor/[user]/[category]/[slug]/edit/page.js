@@ -13,6 +13,7 @@ import { createClient } from '@/utils/supabase/client';
 import { useSession } from "next-auth/react";
 import { usePathname } from 'next/navigation'; 
 import { useRouter } from 'next/navigation'; // 新增：用于跳转
+import matter from 'gray-matter'
 
 export default function NotePage() {
   const { data: session } = useSession();
@@ -98,9 +99,15 @@ export default function NotePage() {
 
     try {
       // 根据路径参数更新匹配的文档
+      const { data: metadata } = matter(editorContent);
+          const slug = metadata.title
+          .replace(/\s+/g, '-') // 空格转短横线
+          .replace(/[^\w\u4e00-\u9fa5-]+/g, '') // 保留单词字符、中文字符、短横线
+          .replace(/--+/g, '-') // 合并连续短横线
+          .replace(/^-+|-+$/g, ''); // 移除首尾短横线
       const { data, error: supabaseError } = await supabase
         .from('mdx_documents')
-        .update({ content: editorContent }) // 仅更新 content 字段
+        .update({ content: editorContent, title: slug }) // 仅更新 content 字段
         .eq('user_id', userId)
         .eq('category', category)
         .eq('title', title)
