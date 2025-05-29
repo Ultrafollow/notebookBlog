@@ -20,6 +20,7 @@ import readingTime from 'reading-time';
 import Twemoji from '@/components/ui/Twemoji.js';
 import { SITE_METADATA } from '@/data/site-metadata'
 import { TreeWrapper } from '@/components/Plugins/Antd';
+import { auth } from '@/auth';
 
 registerPrismLanguages()
 
@@ -104,6 +105,7 @@ export async function getPost(params) {
       frontmatter: {
         ...post,
         date: post.date, // 保持 Date 对象格式
+        author: post.author,
         readingTime: readingTimeText
       }
     }

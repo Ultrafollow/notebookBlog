@@ -116,6 +116,7 @@ export async function getPost(params) {
       frontmatter: {
         ...post,
         date: post.date, // 保持 Date 对象格式
+        author: post.author,
         readingTime: readingTimeText
       }
     }
