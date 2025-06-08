@@ -55,7 +55,8 @@ export default async function WebAuth() {
  
         {/* 下拉内容 */}
         <div className="
-          absolute left-0 top-full mt-4 
+          absolute right-0
+          xl:left-0 top-full mt-4 
           min-w-[16rem] bg-white dark:bg-gray-700 
           rounded-lg shadow-lg p-4 space-y-3
           border border-gray-100 dark:border-gray-600

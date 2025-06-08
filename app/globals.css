@@ -18,6 +18,15 @@
     @apply transition-colors duration-[var(--transition-duration)] ease-[var(--transition-easing)];
   }
 }
+@layer utilities {
+  .animate-slide-in {
+    animation: slide-in-right 0.2s cubic-bezier(0.4,0,0.2,1) both;
+  }
+  @keyframes slide-in-right {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+  }
+}
 /* 主容器 - Flex布局 */
 html {
     scroll-padding-top: 6rem;

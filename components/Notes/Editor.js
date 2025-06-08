@@ -1,7 +1,7 @@
 // components/Notes/Editor.jsx
 'use client'
 
-import React,{ useRef, useEffect, useCallback } from 'react';
+import React,{ useRef, useEffect, useCallback,useState } from 'react';
 import { Editor, loader } from '@monaco-editor/react';
 
 loader.config({ 
@@ -13,6 +13,22 @@ function MonacoEditor({ getValue, content, theme }) {
   const editorRef = useRef(null);
   // 存储事件监听的 dispose 函数（用于清理）
   const disposeRef = useRef(null);
+
+  const [isMobile, setIsMobile] = useState(false); // 新增移动端状态
+
+  // 检测屏幕尺寸
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    
+    checkMobile(); // 初始检测
+    window.addEventListener('resize', checkMobile);
+    
+    return () => {
+      window.removeEventListener('resize', checkMobile);
+    };
+  }, []);
 
   // 编辑器挂载完成时的回调（获取实例并绑定事件）
   const handleEditorMount = useCallback((editor) => {
@@ -49,7 +65,7 @@ summary: 'example'
     <Editor
       // 移除 onChange 回调（改用 ref 监听原生事件）
       height="80vh"
-      width="45vw"
+      width={isMobile ? "70vw" : "45vw"}
       theme={theme}
       language="markdown"
       onMount={handleEditorMount} // 挂载时绑定实例和事件
