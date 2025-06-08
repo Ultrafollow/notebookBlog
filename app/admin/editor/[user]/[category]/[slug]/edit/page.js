@@ -12,60 +12,55 @@ import Editor from '@/components/Notes/Editor2';
 import { createClient } from '@/utils/supabase/client'; 
 import { useSession } from "next-auth/react";
 import { usePathname } from 'next/navigation'; 
-import { useRouter } from 'next/navigation'; // 新增：用于跳转
+import { useRouter } from 'next/navigation';
 import matter from 'gray-matter'
+import clsx from 'clsx';
 
 export default function NotePage() {
   const { data: session } = useSession();
-  const router = useRouter(); // 新增：路由实例
+  const router = useRouter();
   const { resolvedTheme } = useTheme(); 
   const [error, setError] = useState(null);
   const [compiledCode, setCompiledCode] = useState(null);
   const [compileError, setCompileError] = useState(null);
   const [isCompiling, setIsCompiling] = useState(false);
-  const [isLoading, setIsLoading] = useState(true); // 新增：加载状态
-  const [isInitialized, setIsInitialized] = useState(false); // 新增：初始化状态
+  const [isLoading, setIsLoading] = useState(true);
+  const [isInitialized, setIsInitialized] = useState(false);
   const pathname = usePathname(); 
   const pathSegments = pathname
     .replace(/^\//, '')
     .split('/')
     .filter(segment => segment !== '');
 
-  // 提取路径参数（确保路径结构为：/admin/editor/[user_id]/[category]/[slug]）
+  // 提取路径参数
   const userId = pathSegments[2] ? decodeURIComponent(pathSegments[2]) : '';
   const category = pathSegments[3] ? decodeURIComponent(pathSegments[3]) : '';
   const title = pathSegments[4] ? decodeURIComponent(pathSegments[4]) : '';
 
-  // 新增：存储查询到的内容和初始化编辑器内容
   const [editorContent, setEditorContent] = useState('');
   const [isSaving, setIsSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [deleteSuccess, setDeleteSuccess] = useState(false);
+  const [showPreview, setShowPreview] = useState(false); // 响应式预览切换
   const supabase = createClient(); 
 
-
-  // 稳定更新编辑器内容的回调
   const stableUpdateContent = useCallback((content) => {
     setEditorContent(content);
     setSaveSuccess(false); 
   }, []);
 
-  // 新增：从 Supabase 查询匹配的文档内容
+  // 查询内容
   useEffect(() => {
     const fetchContent = async () => {
       setIsLoading(true);
       setError(null);
-      
       try {
-        // 校验路径参数是否完整
         if (!userId || !category || !title) {
           throw new Error('路径参数不完整，无法加载内容');
         }
-
-        // 查询匹配 user_id、category、title 的文档
         const { data, error: supabaseError } = await supabase
           .from('mdx_documents')
-          .select('content') // 仅需 content 字段
+          .select('content')
           .eq('user_id', userId)
           .eq('category', category)
           .eq('title', title)
@@ -73,8 +68,6 @@ export default function NotePage() {
 
         if (supabaseError) throw new Error(supabaseError.message);
         if (!data) throw new Error('未找到匹配的文档');
-
-        // 初始化编辑器内容
         stableUpdateContent(data.content);
         setIsInitialized(true)
       } catch (err) {
@@ -83,38 +76,34 @@ export default function NotePage() {
         setIsLoading(false);
       }
     };
-
     fetchContent();
-  }, [userId, category, title, supabase]);
+  }, [userId, category, title, supabase, stableUpdateContent]);
 
-  // 新增：更新逻辑（替换原保存逻辑）
+  // 更新
   const handleUpdate = useCallback(async () => {
     if (!editorContent.trim()) {
       setError('内容不能为空');
       return;
     }
-
     setIsSaving(true);
     setError(null);
-
     try {
-      // 根据路径参数更新匹配的文档
       const { data: metadata } = matter(editorContent);
-          const slug = metadata.title
-          .replace(/\s+/g, '-') // 空格转短横线
-          .replace(/[^\w\u4e00-\u9fa5-]+/g, '') // 保留单词字符、中文字符、短横线
-          .replace(/--+/g, '-') // 合并连续短横线
-          .replace(/^-+|-+$/g, ''); // 移除首尾短横线
+      const slug = metadata.title
+        .replace(/\s+/g, '-')
+        .replace(/[^\w\u4e00-\u9fa5-]+/g, '')
+        .replace(/--+/g, '-')
+        .replace(/^-+|-+$/g, '');
       const { data, error: supabaseError } = await supabase
         .from('mdx_documents')
-        .update({ content: editorContent, title: slug }) // 仅更新 content 字段
+        .update({ content: editorContent, title: slug })
         .eq('user_id', userId)
         .eq('category', category)
         .eq('title', title)
         .select();
 
       if (supabaseError) throw new Error(supabaseError.message);
-      setSaveSuccess(true); // 更新成功提示
+      setSaveSuccess(true);
     } catch (err) {
       setError(`更新失败：${err.message}`);
     } finally {
@@ -122,16 +111,13 @@ export default function NotePage() {
     }
   }, [editorContent, supabase, userId, category, title]);
 
-  // 新增：删除逻辑
+  // 删除
   const handleDelete = useCallback(async () => {
     const confirmDelete = confirm('确定要删除这篇笔记吗？删除后无法恢复！');
     if (!confirmDelete) return;
-
     setIsSaving(true);
     setError(null);
-
     try {
-      // 根据路径参数删除匹配的文档
       const { error: supabaseError } = await supabase
         .from('mdx_documents')
         .delete()
@@ -140,7 +126,7 @@ export default function NotePage() {
         .eq('title', title);
 
       if (supabaseError) throw new Error(supabaseError.message);
-      router.push(`/admin/editor/${userId}`); // 删除后跳转回用户编辑器列表
+      router.push(`/admin/editor/${userId}`);
     } catch (err) {
       setError(`删除失败：${err.message}`);
     } finally {
@@ -148,19 +134,21 @@ export default function NotePage() {
     }
   }, [router, supabase, userId, category, title]);
 
-  // 保存成功后跳转（原逻辑调整）
-  if (saveSuccess) {
-    setTimeout(() => {
-      setSaveSuccess(false);
-      router.push(`/admin/editor/${session.user.id}`)
-    }, 2000);
-  }
+  // 保存成功后跳转
+  useEffect(() => {
+    if (saveSuccess) {
+      const timer = setTimeout(() => {
+        setSaveSuccess(false);
+        router.push(`/admin/editor/${session?.user?.id}`)
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [saveSuccess, router, session]);
 
-  // 编译逻辑（保持原有）
+  // 编译
   useEffect(() => {
     const abortController = new AbortController();
     let isMounted = true;
-
     const compileMDX = async () => {
       try {
         if (!editorContent) return;
@@ -187,7 +175,6 @@ export default function NotePage() {
         }
       }
     };
-
     const timeout = setTimeout(compileMDX, 800);
     return () => {
       clearTimeout(timeout);
@@ -196,7 +183,9 @@ export default function NotePage() {
     };
   }, [editorContent]);
 
-  // 加载状态和错误处理
+  // 预览切换
+  const togglePreview = () => setShowPreview(v => !v);
+
   if (isLoading) return <div className="p-4 text-center">加载内容中...</div>;
   if (error) return <div className="p-4 text-red-600">错误：{error}</div>;
 
@@ -204,8 +193,8 @@ export default function NotePage() {
 
   return (
     <div className="mt-8 min-h-screen rounded-2xl bg-gray-50 p-4 dark:bg-gray-700">
-      {/* 操作按钮区域（更新和删除） */}
-      <div className="mb-4 flex items-center gap-2">
+      {/* 操作按钮 */}
+      <div className="mb-4 flex flex-wrap items-center gap-2">
         <button
           onClick={handleUpdate}
           disabled={isSaving || !editorContent.trim()}
@@ -220,14 +209,27 @@ export default function NotePage() {
         >
           {isSaving ? '删除中...' : '删除笔记'}
         </button>
+        {/* 移动端预览切换按钮 */}
+        <button
+          onClick={togglePreview}
+          className="md:hidden px-4 py-2 rounded-lg bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-gray-200 transition-colors"
+        >
+          {showPreview ? '编辑' : '预览'}
+        </button>
         {saveSuccess && (
           <span className="text-green-500">更新成功 ✔️</span>
         )}
       </div>
 
-      {/* 编辑器和预览区域 */}
-      <div className="flex rounded-2xl shadow-md bg-white overflow-hidden dark:bg-[#1f1f1f] dark:shadow-lg dark:shadow-cyan-500/50">
-        <div className="w-1/2 p-6 border-r border-gray-100">
+      {/* 编辑器和预览区域 响应式 */}
+      <div className="flex flex-col md:flex-row rounded-2xl shadow-md bg-white overflow-hidden dark:bg-[#1f1f1f] dark:shadow-lg dark:shadow-cyan-500/50">
+        {/* 编辑器区域 */}
+        <div
+          className={clsx(
+            showPreview ? 'hidden' : 'block',
+            'w-full md:w-1/2 p-6 md:border-r border-gray-100'
+          )}
+        >
           {isInitialized && (
             <Editor
               getValue={stableUpdateContent}
@@ -244,16 +246,21 @@ export default function NotePage() {
             />
           )}
         </div>
-
-        <div className="w-1/2 p-2">
-          <div 
+        {/* 预览区域 */}
+        <div
+          className={clsx(
+            showPreview ? 'block' : 'hidden md:block',
+            'w-full md:w-1/2 p-2'
+          )}
+        >
+          <div
             className="markdown-root"
             style={{
               height: 'calc(100vh - 2rem)',
               overflowY: 'auto',
               padding: '1rem'
             }}
-          > 
+          >
             <div className="markdown-body">
               <div className="max-w-4xl">
                 {MDXComponent ? (
