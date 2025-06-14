@@ -13,7 +13,6 @@ import { CheckKey } from '@/components/Author/CheckKeyServer';
 
 export default async function WebAuth() {
   const session = await auth()
-  console.log("session", session)
   const location = await CheckKey({id: session?.user.id});
   const text = <span>{session?.user?.id}</span>
   let editorPathName = "";
