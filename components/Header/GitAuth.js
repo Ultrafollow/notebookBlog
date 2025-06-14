@@ -13,8 +13,16 @@ import { CheckKey } from '@/components/Author/CheckKeyServer';
 
 export default async function WebAuth() {
   const session = await auth()
+  console.log("session", session)
   const location = await CheckKey({id: session?.user.id});
   const text = <span>{session?.user?.id}</span>
+  let editorPathName = "";
+  if (session?.user?.name) {
+    function slugify(text) {
+      return encodeURIComponent(text);
+    }
+    editorPathName = slugify(session.user.name);
+  }
 
   // 未登录状态
   if (!session?.user) {
@@ -69,7 +77,7 @@ export default async function WebAuth() {
             <div className="text-sm font-semibold text-gray-900 dark:text-white">
               <Tip text={text}>
                 <KeyRound className="inline-block mr-1" size={16} strokeWidth={2}/>
-                key:{session.user.id.slice(0, 12)+'...'}
+                key:{session.user.id}
               </Tip>
             </div>
             <div className="text-sm font-semibold text-gray-900 dark:text-white">
@@ -79,7 +87,7 @@ export default async function WebAuth() {
             {location && (
               <div className="mt-1">
                 <Folders className="inline-block mr-1" size={16} strokeWidth={2}/>
-                <a href={`/admin/editor/${session.user.id}`} className="hover:underline text-sm text-gray-900 dark:text-white">
+                <a href={`/admin/editor/${editorPathName}`} className="hover:underline text-sm text-gray-900 dark:text-white">
                     {session.user.name} 的笔记
                 </a>
               </div>

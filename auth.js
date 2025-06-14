@@ -9,14 +9,18 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         strategy: "jwt",
     },
     callbacks: {
-        jwt: async ({ token }) => {
-            return token
+        async jwt({ token, account, profile }) {
+            if (account && profile) {
+            // 登录时，把 GitHub id 存到 token
+            token.uid = profile.id;
+            }
+            return token;
         },
         session: async ({ session, token }) => {
-            if (session.user && token?.sub) {
-                session.user.id = generateStableId(session.user.email)
+            if (session.user && token?.uid) {
+                session.user.id = String(token.uid); // 使用 GitHub id
             }
             return session
         },
-  },
+    }
 })
