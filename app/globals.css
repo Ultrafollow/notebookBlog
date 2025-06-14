@@ -92,20 +92,34 @@ html {
   
   /* TOC容器 */
   .toc-wrapper {
-    flex-grow: 0;     /* 保持固定宽度 */
-    flex-shrink: 0;   /* 禁止收缩 */
-    min-width: 160px; /* 最小宽度 */
-    max-width: 300px;
-    overflow: auto;   /* 内容溢出滚动 */
-    
-    /* 粘性定位 */
-    position: -webkit-sticky;
-    position: sticky;
-    top: 80px;        /* 距离顶部距离 */
-    height: fit-content; /* 高度适应内容 */
-    padding: 6px;    /* 内边距 */
+  flex-grow: 0;     /* 保持固定宽度 */
+  flex-shrink: 0;   /* 禁止收缩 */
+  min-width: 160px; /* 最小宽度 */
+  max-width: 300px;
+  overflow: auto;   /* 内容溢出滚动 */
+  position: -webkit-sticky;
+  position: sticky;
+  top: 80px;        /* 距离顶部距离 */
+  height: fit-content; /* 高度适应内容 */
+  padding: 6px;    /* 内边距 */
+}
+
+/* 移动端适配：隐藏TOC，仅显示内容 */
+@media (max-width: 767px) {
+  .toc-wrapper {
+    display: none !important;
   }
-  
+  .container-wrapper {
+    flex-direction: column !important;
+  }
+  .content-wrapper {
+    border-right: none !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    padding-right: 0 !important;
+  }
+}
+
   /* 移动端适配 */
   @media (max-width: 999px) {
     .toc-wrapper {
