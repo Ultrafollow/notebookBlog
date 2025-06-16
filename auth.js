@@ -1,6 +1,6 @@
 import NextAuth from "next-auth"
 import GitHub from "next-auth/providers/github"
-import { generateStableId } from "@/app/lib/utils"
+// import { generateStableId } from "@/app/lib/utils"
 
 
 export const { handlers, auth, signIn, signOut } = NextAuth({ 
