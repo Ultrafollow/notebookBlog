@@ -3,7 +3,7 @@
 import '@/app/globals.css';
 import '@/app/prism-dracula.css';
 import 'github-markdown-css';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useTheme } from 'next-themes'; 
 import { getMDXComponent } from 'mdx-bundler/client';
 import { TreeWrapper } from '@/components/Plugins/Antd';
@@ -42,7 +42,10 @@ export default function NotePage() {
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [deleteSuccess, setDeleteSuccess] = useState(false);
   const [showPreview, setShowPreview] = useState(false); // 响应式预览切换
-  const supabase = createClient(); 
+  const supabase = useMemo(() => {
+    if (!session?.supabaseAccessToken) return null
+    return createClient(session.supabaseAccessToken)
+  }, [session?.supabaseAccessToken])
 
   const stableUpdateContent = useCallback((content) => {
     setEditorContent(content);

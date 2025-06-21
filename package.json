@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@auth/supabase-adapter": "^1.9.0",
     "@docsearch/css": "^3.9.0",
     "@docsearch/react": "^3.9.0",
     "@giscus/react": "^3.1.0",
@@ -33,6 +34,7 @@
     "gray-matter": "^4.0.3",
     "hastscript": "^9.0.1",
     "highlight.js": "^11.11.1",
+    "jsonwebtoken": "^9.0.2",
     "katex": "^0.16.22",
     "lucide-react": "^0.487.0",
     "mdx-bundler": "^10.1.1",

@@ -3,7 +3,7 @@
 import '@/app/globals.css';
 import '@/app/prism-dracula.css';
 import 'github-markdown-css';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useTheme } from 'next-themes'; 
 import { getMDXComponent } from 'mdx-bundler/client';
 import { TreeWrapper } from '@/components/Plugins/Antd';
@@ -12,7 +12,6 @@ import Editor from '@/components/Notes/Editor';
 import { createClient } from '@/utils/supabase/client';
 import { useSession } from "next-auth/react"
 import { useRouter } from 'next/navigation';
-import { CheckKey } from '@/components/Author/CheckKey';
 import matter from 'gray-matter'
 
 export default function NotePage() {
@@ -31,11 +30,14 @@ export default function NotePage() {
   const [currentCategory, setCurrentCategory] = useState('');
   const [currentSlug, setCurrentSlug] = useState('');
   const [isContentModified, setIsContentModified] = useState(false);
+  const [checkingAllowed, setCheckingAllowed] = useState(false);
   
   // 移动端预览状态
   const [showPreview, setShowPreview] = useState(false);
-  
-  const supabase = createClient();
+  const supabase = useMemo(() => {
+    if (!session?.supabaseAccessToken) return null
+    return createClient(session.supabaseAccessToken)
+  }, [session?.supabaseAccessToken])
 
   const stableUpdateContent = useCallback((content) => {
     setEditorContent(content);
@@ -49,14 +51,21 @@ export default function NotePage() {
       alert('请先登录后再保存');
       return;
     }
-
-    let isAllowed = CheckKey({id: session.user.id});
-
-    if (!isAllowed) {
-      alert(`当前用户无保存权限，请附上你的用户ID：${session.user.id}，联系站长开放权限！`);
-      return;
+    const checkUserAllowed = async (userId) => {
+      const res = await fetch('/api/CheckKey', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: userId }),
+      })
+      const data = await res.json()
+      return data.isAllowed
     }
-    
+    const isAllowed = await checkUserAllowed(session.user.id)
+    setCheckingAllowed(false); // 校验结束，隐藏动画
+    if (!isAllowed) {
+      alert(`当前用户无保存权限，请附上你的用户ID：${session.user.id}，联系站长开放权限！`)
+      return
+    }
     if (!editorContent.trim()) {
       setError('内容不能为空');
       return;
@@ -188,10 +197,14 @@ export default function NotePage() {
       <div className="mb-4 flex flex-wrap items-center gap-2">
         <button
           onClick={handleSave}
-          disabled={isSaving || !editorContent.trim()}
+          disabled={isSaving || !editorContent.trim() || checkingAllowed}
           className="px-4 py-2 rounded-lg bg-blue-500 text-white disabled:bg-blue-300 transition-colors"
         >
-          {isSaving ? '保存中...' : '保存笔记'}
+          {checkingAllowed
+            ? '鉴权...'
+            : isSaving
+              ? '保存中...'
+              : '保存笔记'}
         </button>
         
         {/* 移动端预览切换按钮 */}

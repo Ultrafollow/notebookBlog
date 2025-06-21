@@ -2,9 +2,8 @@ import path from 'path'
 import fs from 'fs/promises'
 import querystring from 'querystring'
 import matter from 'gray-matter'
-import { createClient, createServiceClient } from '@/utils/supabase/server'
-import * as crypto from "crypto";  
-import { auth } from '@/auth'
+import { createServiceClient } from '@/utils/supabase/server'
+import * as crypto from "crypto";
  
 export function generateStableId(email) {
   // 对邮箱进行 SHA-256 哈希，转为十六进制字符串

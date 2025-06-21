@@ -24,42 +24,6 @@ import { auth } from "auth"
 
 registerPrismLanguages()
 
-// 	export async function generateStaticParams() {
-//   try {
-//     const allowedUserIds = process.env.ALLOWED_USERS_ID?.split(',')?.map(id => id.trim()) || [];
-//     if (allowedUserIds.length === 0) {
-//       console.warn('未配置允许的用户 ID（ALLOWED_USERS_ID 环境变量为空）');
-//       return [];
-//     }
- 
-//     const params = [];
-//     for (const userId of allowedUserIds) {
-//       const categoriesData = await getCategoriesWithPosts({ auth_id: userId });
- 
-//       // 遍历每个分类和文章，生成 [category]/[slug] 路径参数
-//       for (const category of categoriesData) {
-//         for (const post of category.posts) {
-//           // 对 category 和 slug 进行 URL 编码（与页面解码逻辑一致）
-//           const deCategory = decodeURIComponent(category.category);
-//           const deSlug = decodeURIComponent(post.slug);
- 
-//           params.push({
-//             user: userId,
-//             category: deCategory,
-//             slug: deSlug,
-//           });
-//         }
-//       }
-//     }
- 
-//     return params;
-//   } catch (error) {
-//     console.error('生成静态路径失败:', error);
-//     return []; // 避免构建失败
-//   }
-// }
-
-
 export async function getPost(params) {
   try {
     const session = await auth()

@@ -9,11 +9,12 @@ import {
 } from 'lucide-react' // 引入图标库
 import Tip from '@/components/Header/Tooltip'
 import { CheckKey } from '@/components/Author/CheckKeyServer';
-
+import ApplyPermissionModal from './ApplyPermissionModal' // 客户端弹窗组件
 
 export default async function WebAuth() {
   const session = await auth()
   const location = await CheckKey({id: session?.user.id});
+  const access = session?.user?.id === process.env.DEFAULT_SESSION_ID
   const text = <span>{session?.user?.id}</span>
   let editorPathName = "";
   if (session?.user?.name) {
@@ -22,7 +23,6 @@ export default async function WebAuth() {
     }
     editorPathName = slugify(session.user.name);
   }
-
   // 未登录状态
   if (!session?.user) {
     return (
@@ -91,6 +91,16 @@ export default async function WebAuth() {
                 </a>
               </div>
             )}
+            {access && (
+              <div className="mt-1">
+                <Folders className="inline-block mr-1" size={16} strokeWidth={2}/>
+                <a href={`/manage`} className="hover:underline text-sm text-gray-900 dark:text-white">
+                    后台管理
+                </a>
+              </div>
+            )}
+            {/* 客户端弹窗按钮 */}
+            <ApplyPermissionModal userId={session.user.id} accessToken={session?.supabaseAccessToken} />
 
           {/* 退出按钮 */}
           <form
