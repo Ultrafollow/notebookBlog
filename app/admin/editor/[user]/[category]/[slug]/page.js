@@ -14,6 +14,7 @@ import { Container } from '@/components/ui/Container'
 import rehypeTocExt from '@/components/Plugins/Rehype-toc-ext'
 import { registerPrismLanguages } from '@/app/lib/lang'
 import rehypeCodeCopyButton from '@/components/Plugins/rehype-code-copy-button.mjs'
+import emoji from 'remark-emoji';
 import remarkMath from 'remark-math'
 import rehypeKatex from 'rehype-katex'
 import readingTime from 'reading-time';
@@ -56,6 +57,7 @@ export async function getPost(params) {
           remarkGfm,
           remarkCodeTitles,
           [remarkMath, { singleDollarTextMath: true }],
+          [emoji, { accessible: true }],
         ]]
         options.rehypePlugins = [...(options.rehypePlugins ?? []), ...[
           rehypeSlug,

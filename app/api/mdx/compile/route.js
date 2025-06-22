@@ -4,6 +4,7 @@ import remarkGfm from 'remark-gfm';
 import rehypeSlug from 'rehype-slug';
 import rehypePrismPlus from 'rehype-prism-plus';
 import remarkCodeTitles from 'remark-flexible-code-titles';
+import emoji from 'remark-emoji';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
 import path from 'path';
@@ -21,7 +22,8 @@ export async function POST(request) {
           ...(options.remarkPlugins || []),
           remarkGfm,
           remarkCodeTitles,
-          [remarkMath, { singleDollarTextMath: true }]
+          [remarkMath, { singleDollarTextMath: true }],
+          [emoji, { accessible: true }],
         ];
         options.rehypePlugins = [
           ...(options.rehypePlugins || []),
