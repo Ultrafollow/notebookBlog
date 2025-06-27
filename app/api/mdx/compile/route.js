@@ -7,6 +7,7 @@ import remarkCodeTitles from 'remark-flexible-code-titles';
 import emoji from 'remark-emoji';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
+import { remarkAlert } from 'remark-github-blockquote-alert'
 import path from 'path';
 
 export async function POST(request) {
@@ -22,6 +23,7 @@ export async function POST(request) {
           ...(options.remarkPlugins || []),
           remarkGfm,
           remarkCodeTitles,
+          remarkAlert,
           [remarkMath, { singleDollarTextMath: true }],
           [emoji, { accessible: true }],
         ];

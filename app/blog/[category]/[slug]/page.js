@@ -18,6 +18,7 @@ import emoji from 'remark-emoji';
 import remarkMath from 'remark-math'
 import rehypeKatex from 'rehype-katex'
 import readingTime from 'reading-time';
+import { remarkAlert } from 'remark-github-blockquote-alert'
 import Twemoji from '@/components/ui/Twemoji.js';
 import { SITE_METADATA } from '@/data/site-metadata'
 import { TreeWrapper } from '@/components/Plugins/Antd';
@@ -80,6 +81,7 @@ export async function getPost(params) {
         options.remarkPlugins = [...(options.remarkPlugins ?? []), ...[
           remarkGfm,
           remarkCodeTitles,
+          remarkAlert,
           [remarkMath, { singleDollarTextMath: true }],
           [emoji, { accessible: true }],
         ]]
