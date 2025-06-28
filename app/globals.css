@@ -27,6 +27,9 @@
     to { transform: translateX(0); opacity: 1; }
   }
 }
+::selection {
+  background-color: rgb(255, 216, 245);
+}
 /* 主容器 - Flex布局 */
 html {
     scroll-padding-top: 6rem;
